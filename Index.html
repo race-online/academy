@@ -80,6 +80,18 @@
       font-weight: bold;
       background-color: var(--border-color);
     }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .item-box {
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 15px;
+    }
   </style>
 </head>
 <body>
@@ -88,7 +100,21 @@
     <h1>Tienda Virtual - Assetto Corsa Evo</h1>
 
     <div class="card">
-      <button onclick="refrescarTodo()">🔄 Cargar / Refrescar Datos</button>
+      <button onclick="refrescarTodo()">🔄 Actualizar Datos</button>
+    </div>
+
+    <div class="card">
+      <h2>Pilotos y Saldos</h2>
+      <div id="view-pilotos">
+        <p>Cargando información de pilotos...</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Catálogo de Coches</h2>
+      <div id="view-tienda" class="grid">
+        <p>Cargando catálogo...</p>
+      </div>
     </div>
 
     <div class="card">
@@ -102,7 +128,7 @@
   <div id="toast" class="toast"></div>
 
   <script>
-    // URL de tu API desplegada en Google Apps Script
+    // URL de tu API en Google Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycbycFt0lPATWmk7w0U3oGLVztDd4X_aCGXNzoLDNp58k_ckPUxjLRO90_Igy7etJADO7/exec";
 
     function toast(mensaje) {
@@ -112,7 +138,6 @@
       setTimeout(() => { t.style.display = 'none'; }, 3000);
     }
 
-    // Peticiones asíncronas compatibles con GitHub Pages y Apps Script (evita CORS)
     async function apiCall(action, params = {}) {
       try {
         const response = await fetch(API_URL, {
@@ -122,77 +147,83 @@
         });
         return await response.json();
       } catch (error) {
-        console.error("Error en la petición API:", error);
-        toast('Error de conexión con la API de Google Sheets');
+        console.error("Error en la llamada a la API:", error);
+        toast('Error de conexión con la API');
         throw error;
       }
     }
 
-    async function vender(idPiloto, idPropiedad) {
+    async function cargarEstadoCompleto() {
       try {
-        const res = await apiCall("venderCoche", { idPiloto: idPiloto, idPropiedad: idPropiedad });
+        const res = await apiCall("obtenerEstado");
         if (res && res.success) {
-          toast('Coche vendido a la tienda');
-          cerrarModal();
-          refrescarTodo();
+          renderPilotos(res.data.pilotos || []);
+          renderTienda(res.data.tienda || []);
+          renderHistorial(res.data.historial || []);
         } else {
-          toast('Error: ' + (res ? res.error : 'No se pudo procesar la venta'));
+          toast('Error al obtener los datos de Google Sheets');
         }
       } catch (err) {
-        toast('Error: ' + err.message);
+        console.error("Error en cargarEstadoCompleto:", err);
       }
     }
 
-    function cerrarModal() {
-      const modal = document.getElementById('modalFicha');
-      if (modal) modal.style.display = 'none';
-    }
-
-    async function cargarHistorial() {
-      try {
-        const res = await apiCall("getHistorialCompleto");
-        if (res && res.success) {
-          const hs = res.data || [];
-          const rows = hs.map(h => `
-            <tr>
-              <td>${h.Fecha ? new Date(h.Fecha).toLocaleString() : ''}</td>
-              <td><span class="pill ${h.Tipo || ''}">${h.Tipo || ''}</span></td>
-              <td>${h.Piloto || ''}</td>
-              <td>${h.Coche || ''}</td>
-              <td>${h.Importe > 0 ? '+' : ''}${Number(h.Importe || 0).toLocaleString()}</td>
-              <td>${Number(h.Saldo_Resultante || 0).toLocaleString()}</td>
-            </tr>`).join('');
-
-          document.getElementById('view-historial').innerHTML = `
-            <table>
-              <thead>
-                <tr><th>Fecha</th><th>Tipo</th><th>Piloto</th><th>Coche</th><th>Importe</th><th>Saldo</th></tr>
-              </thead>
-              <tbody>${rows || '<tr><td colspan="6" style="text-align:center;">Sin movimientos todavía</td></tr>'}</tbody>
-            </table>`;
-        } else {
-          toast('Error al cargar el historial');
-        }
-      } catch (err) {
-        console.error("Error cargando historial:", err);
+    function renderPilotos(pilotos) {
+      if (!pilotos.length) {
+        document.getElementById('view-pilotos').innerHTML = '<p>No hay pilotos registrados.</p>';
+        return;
       }
+      const rows = pilotos.map(p => `
+        <tr>
+          <td>${p.Nombre || p.Piloto || ''}</td>
+          <td>${Number(p.Saldo || 0).toLocaleString()} €</td>
+        </tr>`).join('');
+
+      document.getElementById('view-pilotos').innerHTML = `
+        <table>
+          <thead><tr><th>Piloto</th><th>Saldo Actual</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
     }
 
-    function cargarTienda() {
-      // Espacio preparado para implementar el renderizado de la lista de coches
+    function renderTienda(coches) {
+      if (!coches.length) {
+        document.getElementById('view-tienda').innerHTML = '<p>No hay coches en el catálogo.</p>';
+        return;
+      }
+      document.getElementById('view-tienda').innerHTML = coches.map(c => `
+        <div class="item-box">
+          <h3>${c.Nombre || c.Coche || 'Coche'}</h3>
+          <p><strong>Categoría:</strong> ${c.Categoria || '-'}</p>
+          <p><strong>Precio:</strong> ${Number(c.Precio || 0).toLocaleString()} €</p>
+        </div>`).join('');
     }
 
-    function cargarPilotos() {
-      // Espacio preparado para implementar el renderizado de la lista de pilotos
+    function renderHistorial(historial) {
+      if (!historial.length) {
+        document.getElementById('view-historial').innerHTML = '<p>Sin movimientos todavía</p>';
+        return;
+      }
+      const rows = historial.map(h => `
+        <tr>
+          <td>${h.Fecha ? new Date(h.Fecha).toLocaleString() : ''}</td>
+          <td><span class="pill">${h.Tipo || ''}</span></td>
+          <td>${h.Piloto || ''}</td>
+          <td>${h.Coche || ''}</td>
+          <td>${Number(h.Importe || 0).toLocaleString()} €</td>
+        </tr>`).join('');
+
+      document.getElementById('view-historial').innerHTML = `
+        <table>
+          <thead><tr><th>Fecha</th><th>Tipo</th><th>Piloto</th><th>Coche</th><th>Importe</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
     }
 
     function refrescarTodo() {
-      cargarTienda();
-      cargarPilotos();
-      cargarHistorial();
+      cargarEstadoCompleto();
     }
 
-    // Cargar datos automáticamente al abrir la página
     window.onload = function() {
       refrescarTodo();
     };
