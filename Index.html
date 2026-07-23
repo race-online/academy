@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tienda Virtual - AC Evo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #121212; color: #ffffff; }
+    h1, h2 { color: #00d26a; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .card { background-color: #1e1e1e; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
+    button { background-color: #00d26a; color: #000; border: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+    button:hover { background-color: #00f078; }
+    input, select { padding: 8px; margin-right: 10px; border-radius: 4px; border: 1px solid #444; background: #222; color: #fff; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+    th { background-color: #2a2a2a; color: #00d26a; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tienda Virtual - Assetto Corsa Evo</h1>
+    
+    <!-- CONFIGURACIÓN API -->
+    <script>
+      // REEMPLAZA ESTA URL POR LA URL DE TU DESPLIEGUE EN GOOGLE APPS SCRIPT
+      const API_URL = "https://script.google.com/macros/s/AKfycbyb8HG3rcBvmuaueGaP9-oG2J3iTQSaQfPTcpemyMhY0b9I6e2Szpx3EQ2iULSrStXx/exec";
+
+      async function apiCall(action, params = {}) {
+        if (API_URL === "https://script.google.com/macros/s/AKfycbyb8HG3rcBvmuaueGaP9-oG2J3iTQSaQfPTcpemyMhY0b9I6e2Szpx3EQ2iULSrStXx/exec" || !API_URL) {
+          alert("Debes configurar la constante API_URL en el archivo index.html primero.");
+          return;
+        }
+        try {
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: action, params: params })
+          });
+          return await response.json();
+        } catch (error) {
+          console.error("Error en la llamada a la API:", error);
+          alert("Error de conexión con la API de Google Apps Script.");
+        }
+      }
+
+      async function cargarDatos() {
+        if (API_URL === "https://script.google.com/macros/s/AKfycbyb8HG3rcBvmuaueGaP9-oG2J3iTQSaQfPTcpemyMhY0b9I6e2Szpx3EQ2iULSrStXx/exec") return;
+        const res = await apiCall("obtenerEstado");
+        if (res && res.success) {
+          console.log("Datos cargados correctamente:", res.data);
+          // Renderizado dinámico de la tienda aquí
+        }
+      }
+
+      window.onload = cargarDatos;
+    </script>
+
+    <div class="card">
+      <h2>Estado del Repositorio y API</h2>
+      <p>Frontend cargado correctamente desde GitHub Pages.</p>
+      <button onclick="cargarDatos()">Conectar / Actualizar Datos</button>
+    </div>
+  </div>
+</body>
+</html>
