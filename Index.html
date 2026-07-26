@@ -422,7 +422,7 @@
 /* ==========================================================
    CONFIGURACIÓN — URL de tu Web App de Apps Script
    ========================================================== */
-const API_URL = 'https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVlwfOUnvciGoVOJ1KJ3uN3W70GuRJQuKBhqMaZoosp0G3BqA/exec';
+const https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVlwfOUnvciGoVOJ1KJ3uN3W70GuRJQuKBhqMaZoosp0G3BqA/exec = 'https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVlwfOUnvciGoVOJ1KJ3uN3W70GuRJQuKBhqMaZoosp0G3BqA/exec';
 
 /* ==========================================================
    ESTADO GLOBAL
@@ -440,7 +440,7 @@ let ventaContext = null; // { idCoche, idPiloto }
    HELPERS DE RED
    ========================================================== */
 async function apiGet(){
-  const res = await fetch(API_URL);
+  const res = await fetch(https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVlwfOUnvciGoVOJ1KJ3uN3W70GuRJQuKBhqMaZoosp0G3BqA/exec);
   const json = await res.json();
   if(!json.ok) throw new Error(json.error || 'Error al cargar datos');
   return json.data;
@@ -448,7 +448,7 @@ async function apiGet(){
 
 async function apiPost(payload){
   // Content-Type text/plain evita el preflight CORS en Apps Script
-  const res = await fetch(API_URL, {
+  const res = await fetch(https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVlwfOUnvciGoVOJ1KJ3uN3W70GuRJQuKBhqMaZoosp0G3BqA/exec, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(payload)
