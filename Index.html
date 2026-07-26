@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EvoCredits · Economía Virtual Simracing</title>
+<title>Race Online Shop · Economía Virtual Simracing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -133,6 +133,7 @@
   .car-card .name{font-family:'Teko',sans-serif;font-size:22px;line-height:1.1;margin:0 0 2px;}
   .car-card .owner{font-size:12px;color:var(--text-dim);margin:0 0 12px;}
   .car-card .owner.free{color:var(--cyan);}
+  .car-card .owner.sold-out{color:var(--danger);}
   .price-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
   .price-row .val{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:var(--amber);}
   .price-row .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
@@ -166,8 +167,13 @@
   .garage{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--hairline);}
   .pilot-card.open .garage{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
   .garage .empty{color:var(--text-dim);font-size:13px;grid-column:1/-1;}
+  .qty-badge{
+    position:absolute;bottom:10px;right:10px;z-index:2;
+    background:rgba(0,0,0,0.6);border:1px solid var(--hairline);color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;
+  }
 
-  /* ---------- Carreras ---------- */
+  /* ---------- Carreras / Clasificación ---------- */
   .checkered-divider{
     height:10px;border-radius:4px;margin:22px 0;
     background-image:
@@ -179,9 +185,9 @@
   table{width:100%;border-collapse:collapse;font-size:14px;}
   thead th{
     text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);
-    padding:10px 12px;border-bottom:1px solid var(--hairline);font-weight:600;
+    padding:10px 12px;border-bottom:1px solid var(--hairline);font-weight:600;white-space:nowrap;
   }
-  tbody td{padding:11px 12px;border-bottom:1px solid var(--hairline);}
+  tbody td{padding:11px 12px;border-bottom:1px solid var(--hairline);white-space:nowrap;}
   tbody tr:hover{background:var(--panel-2);}
   .table-wrap{background:var(--panel);border:1px solid var(--hairline);border-radius:var(--radius);overflow:hidden;overflow-x:auto;}
   .pos-badge{
@@ -189,6 +195,13 @@
     font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;background:var(--panel-2);color:var(--text-dim);
   }
   .pos-badge.p1{background:var(--amber-dim);color:var(--amber);}
+  .pos-badge.p2{background:rgba(139,147,161,0.18);color:#C9CFD8;}
+  .pos-badge.p3{background:rgba(205,127,50,0.18);color:#CD7F32;}
+  .class-tag{
+    font-size:10.5px;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.5px;
+    background:var(--panel-2);color:var(--text-dim);border:1px solid var(--hairline);font-weight:600;
+  }
+  .pts{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--cyan);}
 
   .amount{font-family:'JetBrains Mono',monospace;font-weight:600;}
   .amount.pos{color:var(--cyan);}
@@ -251,17 +264,18 @@
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <div class="badge">EC</div>
+      <div class="badge">RO</div>
       <div>
-        <h1>EvoCredits</h1>
-        <span>Assetto Corsa Evo · Economía de comunidad</span>
+        <h1>Race Online Shop</h1>
+        <span>Assetto Corsa Evo Academy · Economía de comunidad</span>
       </div>
     </div>
     <nav class="tabs" id="tabs">
       <button class="tab-btn active" data-view="concesionario"><span class="num">01</span> Concesionario</button>
       <button class="tab-btn" data-view="pilotos"><span class="num">02</span> Pilotos</button>
       <button class="tab-btn" data-view="carreras"><span class="num">03</span> Carreras</button>
-      <button class="tab-btn" data-view="historial"><span class="num">04</span> Historial</button>
+      <button class="tab-btn" data-view="clasificacion"><span class="num">04</span> Clasificación</button>
+      <button class="tab-btn" data-view="historial"><span class="num">05</span> Historial</button>
     </nav>
   </div>
 </header>
@@ -280,7 +294,7 @@
     <div class="pillbar" id="filterCoches">
       <button class="pill active" data-filter="todos">Todos</button>
       <button class="pill" data-filter="disponibles">En concesionario</button>
-      <button class="pill" data-filter="comprados">Comprados por pilotos</button>
+      <button class="pill" data-filter="agotados">Agotados / comprados</button>
     </div>
     <div class="grid" id="gridCoches"></div>
   </section>
@@ -300,7 +314,7 @@
   <section class="view" id="view-carreras">
     <div class="view-head">
       <div>
-        <h2>Clasificación & Carreras</h2>
+        <h2>Carreras</h2>
         <p>Bolsa de premios del campeonato y estado de cada gran premio</p>
       </div>
     </div>
@@ -315,17 +329,32 @@
         <tbody id="tablaCarreras"></tbody>
       </table>
     </div>
+  </section>
+
+  <!-- ============ 04 CLASIFICACIÓN ============ -->
+  <section class="view" id="view-clasificacion">
+    <div class="view-head">
+      <div>
+        <h2>Clasificación</h2>
+        <p>Clasificación general del campeonato por piloto y carrera</p>
+      </div>
+      <input class="search-input" id="searchClasificacion" placeholder="Buscar piloto o equipo…">
+    </div>
     <div class="checkered-divider"></div>
-    <h3 style="font-size:22px;margin-bottom:12px;">Premios acumulados por piloto</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Piloto</th><th>Total ganado en premios/bonos (EC)</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Pos.</th><th>Clase</th><th>Piloto</th><th>Lic.</th><th>Equipo</th><th>Marca</th>
+            <th>Espec.</th><th>Puntos</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Pen.</th>
+          </tr>
+        </thead>
         <tbody id="tablaClasificacion"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- ============ 04 HISTORIAL ============ -->
+  <!-- ============ 05 HISTORIAL ============ -->
   <section class="view" id="view-historial">
     <div class="view-head">
       <div>
@@ -398,13 +427,14 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVl
 /* ==========================================================
    ESTADO GLOBAL
    ========================================================== */
-let DB = { pilotos: [], coches: [], carreras: [], historial: [] };
+let DB = { pilotos: [], coches: [], carreras: [], clasificacion: [], historial: [] };
 let cocheFilter = 'todos';
 let historialFilter = 'TODOS';
 let coches_query = '';
 let historial_query = '';
+let clasificacion_query = '';
 let cocheSeleccionadoId = null;
-let ventaCocheId = null;
+let ventaContext = null; // { idCoche, idPiloto }
 
 /* ==========================================================
    HELPERS DE RED
@@ -460,10 +490,43 @@ async function cargarTodo(){
     renderCoches();
     renderPilotos();
     renderCarreras();
+    renderClasificacion();
     renderHistorial();
   }catch(err){
     toast('No se pudieron cargar los datos: ' + err.message, 'err');
   }
+}
+
+/* ==========================================================
+   MODELO DE STOCK
+   ----------------------------------------------------------
+   Un coche con la columna Stock rellena es un coche "de stock
+   compartido": varias unidades intercambiables, disponibles
+   mientras Stock > 0. Propietario_ID se mantiene siempre en
+   CONCESIONARIO para estos coches — no representa un dueño único.
+   Para saber cuántas unidades tiene CADA piloto, se cuenta a
+   partir del Historial (COMPRA suma 1, VENTA resta 1).
+
+   Un coche sin Stock es "único": Propietario_ID indica su dueño
+   directamente (o CONCESIONARIO si está libre).
+   ========================================================== */
+function esCocheDeStock(c){
+  return c.Stock !== undefined && c.Stock !== null && c.Stock !== '';
+}
+function cocheDisponible(c){
+  if(esCocheDeStock(c)) return Number(c.Stock) > 0;
+  return String(c.Propietario_ID).trim() === 'CONCESIONARIO';
+}
+function unidadesPropias(idPiloto, idCoche){
+  const marca = '(' + idCoche + ')';
+  let total = 0;
+  DB.historial.forEach(h=>{
+    if(String(h.ID_Piloto) !== String(idPiloto)) return;
+    if(String(h.Detalle).indexOf(marca) === -1) return;
+    if(h.Tipo_Operacion === 'COMPRA') total += 1;
+    if(h.Tipo_Operacion === 'VENTA') total -= 1;
+  });
+  return total;
 }
 
 /* ==========================================================
@@ -478,8 +541,8 @@ function renderCoches(){
   const grid = document.getElementById('gridCoches');
   let list = DB.coches.slice();
 
-  if(cocheFilter === 'disponibles') list = list.filter(c => String(c.Propietario_ID).trim() === 'CONCESIONARIO');
-  if(cocheFilter === 'comprados') list = list.filter(c => String(c.Propietario_ID).trim() !== 'CONCESIONARIO');
+  if(cocheFilter === 'disponibles') list = list.filter(c => cocheDisponible(c));
+  if(cocheFilter === 'agotados') list = list.filter(c => !cocheDisponible(c));
   if(coches_query.trim()){
     const q = coches_query.trim().toLowerCase();
     list = list.filter(c => String(c.Nombre_Coche).toLowerCase().includes(q) || String(c.Categoria).toLowerCase().includes(q));
@@ -491,9 +554,19 @@ function renderCoches(){
   }
 
   grid.innerHTML = list.map(c=>{
-    const esLibre = String(c.Propietario_ID).trim() === 'CONCESIONARIO';
-    const ownerLine = esLibre ? 'Disponible en concesionario' : ('Propiedad de ' + nombrePiloto(c.Propietario_ID));
-    const stockLine = (c.Stock !== undefined && c.Stock !== '') ? (' · Stock: ' + c.Stock) : '';
+    const stockCar = esCocheDeStock(c);
+    const disponible = cocheDisponible(c);
+    let ownerLine;
+    if(stockCar){
+      const stockActual = Number(c.Stock) || 0;
+      ownerLine = disponible
+        ? ('Disponible en concesionario · Stock: ' + stockActual)
+        : 'Agotado en concesionario';
+    } else {
+      ownerLine = disponible ? 'Disponible en concesionario' : ('Propiedad de ' + nombrePiloto(c.Propietario_ID));
+    }
+    const ownerClass = disponible ? 'free' : (stockCar ? 'sold-out' : '');
+
     return `
       <div class="car-card">
         <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
@@ -503,14 +576,14 @@ function renderCoches(){
         </div>
         <div class="body">
           <p class="name">${c.Nombre_Coche}</p>
-          <p class="owner ${esLibre ? 'free' : ''}">${ownerLine}${stockLine}</p>
+          <p class="owner ${ownerClass}">${ownerLine}</p>
           <div class="price-row">
             <span class="label">Precio</span>
             <span class="val">${Number(c.Precio_Compra_EC).toLocaleString()} EC</span>
           </div>
-          ${esLibre
+          ${disponible
             ? `<button class="action buy" onclick="abrirModalComprar('${c.ID_Coche}')">Comprar coche</button>`
-            : `<button class="action ghost" disabled>En garaje de piloto</button>`
+            : `<button class="action ghost" disabled>${stockCar ? 'Sin stock' : 'En garaje de piloto'}</button>`
           }
         </div>
       </div>`;
@@ -565,8 +638,8 @@ document.getElementById('btnConfirmarCompra').addEventListener('click', async ()
 });
 
 /* ---------- Modal vender ---------- */
-function abrirModalVender(idCoche){
-  ventaCocheId = idCoche;
+function abrirModalVender(idCoche, idPiloto){
+  ventaContext = { idCoche, idPiloto };
   const coche = DB.coches.find(c => String(c.ID_Coche) === String(idCoche));
   document.getElementById('venderTitulo').textContent = 'Vender ' + coche.Nombre_Coche;
   document.getElementById('venderSub').textContent = 'Recibirás ' + Number(coche.Precio_Venta_EC).toLocaleString() + ' EC del concesionario';
@@ -576,15 +649,15 @@ function abrirModalVender(idCoche){
 
 document.getElementById('btnConfirmarVenta').addEventListener('click', async ()=>{
   const pin = document.getElementById('venderPin').value;
-  const coche = DB.coches.find(c => String(c.ID_Coche) === String(ventaCocheId));
   const btn = document.getElementById('btnConfirmarVenta');
   if(!pin){ toast('Introduce tu PIN de seguridad.', 'err'); return; }
+  if(!ventaContext){ toast('No se ha seleccionado ningún coche.', 'err'); return; }
 
   btn.disabled = true;
   const original = btn.textContent;
   btn.innerHTML = '<span class="spinner"></span>Procesando transacción…';
   try{
-    const res = await apiPost({ action:'venderCoche', idPiloto: coche.Propietario_ID, pin, idCoche: ventaCocheId });
+    const res = await apiPost({ action:'venderCoche', idPiloto: ventaContext.idPiloto, pin, idCoche: ventaContext.idCoche });
     toast(res.message || 'Coche vendido con éxito.', 'ok');
     cerrarModal('modalVender');
     await cargarTodo();
@@ -606,10 +679,24 @@ document.querySelectorAll('.overlay').forEach(ov=>{
 /* ==========================================================
    PILOTOS & GARAJES
    ========================================================== */
+function cochesDelPiloto(idPiloto){
+  // Coches únicos que le pertenecen directamente
+  const unicos = DB.coches
+    .filter(c => !esCocheDeStock(c) && String(c.Propietario_ID) === String(idPiloto))
+    .map(c => ({ coche: c, cantidad: 1 }));
+
+  // Coches de stock compartido de los que posee al menos 1 unidad
+  const deStock = DB.coches
+    .filter(c => esCocheDeStock(c))
+    .map(c => ({ coche: c, cantidad: unidadesPropias(idPiloto, c.ID_Coche) }))
+    .filter(x => x.cantidad > 0);
+
+  return unicos.concat(deStock);
+}
+
 function valorGaraje(idPiloto){
-  return DB.coches
-    .filter(c => String(c.Propietario_ID) === String(idPiloto))
-    .reduce((sum,c)=> sum + (Number(c.Precio_Venta_EC) || 0), 0);
+  return cochesDelPiloto(idPiloto)
+    .reduce((sum, x) => sum + (Number(x.coche.Precio_Venta_EC) || 0) * x.cantidad, 0);
 }
 
 function renderPilotos(){
@@ -619,19 +706,21 @@ function renderPilotos(){
     return;
   }
   cont.innerHTML = DB.pilotos.map(p=>{
-    const misCoches = DB.coches.filter(c => String(c.Propietario_ID) === String(p.ID_Piloto));
+    const misCoches = cochesDelPiloto(p.ID_Piloto);
+    const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
     const garajeHtml = misCoches.length
-      ? misCoches.map(c => `
+      ? misCoches.map(({coche:c, cantidad}) => `
         <div class="car-card">
           <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
             <div class="stripe"></div>
             <div class="number">${String(c.ID_Coche).slice(-2)}</div>
             <div class="cat-tag">${c.Categoria || ''}</div>
+            ${cantidad > 1 ? `<div class="qty-badge">x${cantidad}</div>` : ''}
           </div>
           <div class="body">
             <p class="name">${c.Nombre_Coche}</p>
-            <p class="owner">Valor de venta: ${Number(c.Precio_Venta_EC).toLocaleString()} EC</p>
-            <button class="action sell" onclick="event.stopPropagation(); abrirModalVender('${c.ID_Coche}')">Vender al concesionario por ${Number(c.Precio_Venta_EC).toLocaleString()} EC</button>
+            <p class="owner">Valor de venta: ${Number(c.Precio_Venta_EC).toLocaleString()} EC ${cantidad > 1 ? '/ unidad' : ''}</p>
+            <button class="action sell" onclick="event.stopPropagation(); abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')">Vender ${cantidad > 1 ? '1 unidad' : ''} por ${Number(c.Precio_Venta_EC).toLocaleString()} EC</button>
           </div>
         </div>`).join('')
       : '<div class="empty">Este piloto no tiene coches en su garaje.</div>';
@@ -644,7 +733,7 @@ function renderPilotos(){
             <p class="name">${p.Nombre_Piloto}</p>
             <div class="pilot-stats">
               <span class="stat ec">Saldo: <b>${Number(p.Saldo_EC).toLocaleString()} EC</b></span>
-              <span class="stat">Garaje: <b>${misCoches.length}</b> coches</span>
+              <span class="stat">Garaje: <b>${totalUnidades}</b> coches</span>
               <span class="stat">Valor garaje: <b>${valorGaraje(p.ID_Piloto).toLocaleString()} EC</b></span>
             </div>
           </div>
@@ -660,47 +749,81 @@ function togglePiloto(id){
 }
 
 /* ==========================================================
-   CARRERAS
+   CARRERAS (bolsa de premios configurada)
    ========================================================== */
 function renderCarreras(){
   const tbody = document.getElementById('tablaCarreras');
   if(DB.carreras.length === 0){
     tbody.innerHTML = '<tr><td colspan="9" style="color:var(--text-dim);">Sin carreras configuradas.</td></tr>';
-  } else {
-    tbody.innerHTML = DB.carreras.map(c => `
-      <tr>
-        <td>${c.Nombre_Carrera}</td>
-        <td>${c.Estado}</td>
-        <td class="amount">${c.Posicion_1_Premio}</td>
-        <td class="amount">${c.Posicion_2_Premio}</td>
-        <td class="amount">${c.Posicion_3_Premio}</td>
-        <td class="amount">${c.Posicion_4_10_Premio}</td>
-        <td class="amount">${c.Pole_Bonus}</td>
-        <td class="amount">${c.Vuelta_Rapida_Bonus}</td>
-        <td class="amount">${c.Clean_Racing_Bonus}</td>
-      </tr>`).join('');
+    return;
+  }
+  tbody.innerHTML = DB.carreras.map(c => `
+    <tr>
+      <td>${c.Nombre_Carrera}</td>
+      <td>${c.Estado}</td>
+      <td class="amount">${c.Posicion_1_Premio}</td>
+      <td class="amount">${c.Posicion_2_Premio}</td>
+      <td class="amount">${c.Posicion_3_Premio}</td>
+      <td class="amount">${c.Posicion_4_10_Premio}</td>
+      <td class="amount">${c.Pole_Bonus}</td>
+      <td class="amount">${c.Vuelta_Rapida_Bonus}</td>
+      <td class="amount">${c.Clean_Racing_Bonus}</td>
+    </tr>`).join('');
+}
+
+/* ==========================================================
+   CLASIFICACIÓN GENERAL (hoja Clasificacion)
+   ========================================================== */
+function renderClasificacion(){
+  const tbody = document.getElementById('tablaClasificacion');
+  let list = DB.clasificacion.slice();
+
+  if(clasificacion_query.trim()){
+    const q = clasificacion_query.trim().toLowerCase();
+    list = list.filter(c =>
+      String(c['Piloto']).toLowerCase().includes(q) ||
+      String(c['Equipo']).toLowerCase().includes(q) ||
+      String(c['Marca']).toLowerCase().includes(q)
+    );
   }
 
-  // Clasificación: suma de PREMIO_CARRERA + BONO por piloto, según Historial
-  const totales = {};
-  DB.historial.forEach(h=>{
-    if(h.Tipo_Operacion === 'PREMIO_CARRERA' || h.Tipo_Operacion === 'BONO'){
-      const id = h.ID_Piloto;
-      totales[id] = (totales[id] || 0) + (Number(h.Monto_EC) || 0);
-    }
+  // Ordena por Posición si está rellena; si no, por Puntos descendente
+  list.sort((a,b)=>{
+    const pa = Number(a['Posición']), pb = Number(b['Posición']);
+    if(!isNaN(pa) && !isNaN(pb) && pa !== pb) return pa - pb;
+    return (Number(b['Puntos']) || 0) - (Number(a['Puntos']) || 0);
   });
-  const filas = Object.entries(totales).sort((a,b)=> b[1]-a[1]);
-  const tbodyClasif = document.getElementById('tablaClasificacion');
-  if(filas.length === 0){
-    tbodyClasif.innerHTML = '<tr><td colspan="2" style="color:var(--text-dim);">Todavía no se han registrado premios.</td></tr>';
-  } else {
-    tbodyClasif.innerHTML = filas.map(([id,total],i)=>`
-      <tr>
-        <td><span class="pos-badge ${i===0?'p1':''}">${i+1}</span> &nbsp; ${nombrePiloto(id)}</td>
-        <td class="amount pos">${total.toLocaleString()} EC</td>
-      </tr>`).join('');
+
+  if(list.length === 0){
+    tbody.innerHTML = '<tr><td colspan="13" style="color:var(--text-dim);">Todavía no hay clasificación registrada.</td></tr>';
+    return;
   }
+
+  tbody.innerHTML = list.map((c,i)=>{
+    const posBadgeClass = i===0 ? 'p1' : (i===1 ? 'p2' : (i===2 ? 'p3' : ''));
+    return `
+    <tr>
+      <td><span class="pos-badge ${posBadgeClass}">${c['Posición'] || (i+1)}</span></td>
+      <td><span class="class-tag">${c['Clase'] || ''}</span></td>
+      <td>${c['Piloto'] || ''}</td>
+      <td>${c['Lic.'] || ''}</td>
+      <td>${c['Equipo'] || ''}</td>
+      <td>${c['Marca'] || ''}</td>
+      <td>${c['Espec.'] || ''}</td>
+      <td class="pts">${c['Puntos'] || 0}</td>
+      <td class="amount">${c['R1'] ?? ''}</td>
+      <td class="amount">${c['R2'] ?? ''}</td>
+      <td class="amount">${c['R3'] ?? ''}</td>
+      <td class="amount">${c['R4'] ?? ''}</td>
+      <td class="amount ${Number(c['Pen.']) < 0 ? 'neg' : ''}">${c['Pen.'] ?? 0}</td>
+    </tr>`;
+  }).join('');
 }
+
+document.getElementById('searchClasificacion').addEventListener('input', e=>{
+  clasificacion_query = e.target.value;
+  renderClasificacion();
+});
 
 /* ==========================================================
    HISTORIAL
