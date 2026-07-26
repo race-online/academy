@@ -1,186 +1,880 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Race Online Shop - Simracing</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --accent: #e11d48;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-    }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-    }
-    .container { max-width: 1000px; margin: 0 auto; }
-    h1, h2 { text-transform: uppercase; letter-spacing: 1px; }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: var(--card-bg);
-      border-radius: 8px;
-      padding: 15px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .price { font-size: 1.25rem; font-weight: bold; color: #10b981; }
-    button {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      width: 100%;
-      margin-top: 10px;
-    }
-    button:hover { opacity: 0.9; }
-    button:disabled { background: #475569; cursor: not-allowed; }
-    .select-piloto {
-      padding: 8px;
-      border-radius: 4px;
-      background: #334155;
-      color: white;
-      border: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Race Online Shop · Economía Virtual Simracing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --asphalt: #0B0D10;
+    --panel: #14171C;
+    --panel-2: #1B1F26;
+    --hairline: #262B33;
+    --text: #E7EAEE;
+    --text-dim: #8B93A1;
+    --cyan: #00E5C7;
+    --cyan-dim: rgba(0,229,199,0.12);
+    --amber: #FFB020;
+    --amber-dim: rgba(255,176,32,0.12);
+    --danger: #FF4757;
+    --danger-dim: rgba(255,71,87,0.12);
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(0,229,199,0.06), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(255,176,32,0.05), transparent 55%),
+      var(--asphalt);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  h1,h2,h3,.display{font-family:'Teko',sans-serif;font-weight:600;letter-spacing:0.3px;}
+
+  /* ---------- Layout shell ---------- */
+  header.topbar{
+    position:sticky;top:0;z-index:50;
+    background:rgba(11,13,16,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hairline);
+  }
+  .topbar-inner{
+    max-width:1180px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .badge{
+    width:38px;height:38px;border-radius:8px;
+    background:linear-gradient(135deg,var(--cyan),#00A88F);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Teko',sans-serif;font-size:22px;font-weight:700;color:#04211D;
+    box-shadow:0 0 0 2px rgba(0,229,199,0.25);
+  }
+  .brand h1{font-size:26px;margin:0;line-height:1;}
+  .brand span{display:block;font-size:11px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;font-family:'Inter',sans-serif;}
+
+  nav.tabs{display:flex;gap:4px;flex-wrap:wrap;}
+  nav.tabs button{
+    display:flex;align-items:center;gap:8px;
+    background:transparent;border:1px solid transparent;color:var(--text-dim);
+    padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;
+    font-family:'Inter',sans-serif;transition:all .15s ease;
+  }
+  nav.tabs button .num{
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--asphalt);
+    background:var(--text-dim);border-radius:4px;padding:1px 5px;
+  }
+  nav.tabs button.active{color:var(--text);background:var(--panel-2);border-color:var(--hairline);}
+  nav.tabs button.active .num{background:var(--cyan);}
+  nav.tabs button:hover{color:var(--text);}
+
+  main{max-width:1180px;margin:0 auto;padding:28px 20px 80px;}
+  section.view{display:none;}
+  section.view.active{display:block;animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  .view-head{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+  .view-head h2{font-size:34px;margin:0;}
+  .view-head p{margin:2px 0 0;color:var(--text-dim);font-size:14px;}
+
+  /* ---------- Filter pills ---------- */
+  .pillbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .pill{
+    padding:7px 14px;border-radius:999px;border:1px solid var(--hairline);
+    background:var(--panel);color:var(--text-dim);font-size:13px;cursor:pointer;
+    transition:all .15s ease;
+  }
+  .pill.active{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan);}
+
+  .search-input{
+    background:var(--panel);border:1px solid var(--hairline);color:var(--text);
+    padding:9px 14px;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;
+    width:100%;max-width:280px;
+  }
+  .search-input:focus{outline:none;border-color:var(--cyan);}
+
+  /* ---------- Car livery cards ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;}
+  .car-card{
+    position:relative;background:var(--panel);border:1px solid var(--hairline);
+    border-radius:var(--radius);overflow:hidden;transition:border-color .15s ease,transform .15s ease;
+  }
+  .car-card:hover{border-color:#39404C;transform:translateY(-2px);}
+  .car-card .photo{
+    position:relative;height:140px;background:var(--panel-2);
+    background-size:cover;background-position:center;
+  }
+  .car-card .photo::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 40%, rgba(11,13,16,0.9) 100%);
+  }
+  .car-card .stripe{
+    position:absolute;top:0;left:0;width:100%;height:100%;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 10px, transparent 10px 26px);
+    pointer-events:none;
+  }
+  .car-card .number{
+    position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:50%;
+    background:var(--asphalt);border:2px solid var(--cyan);color:var(--cyan);
+    display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
+    font-size:12px;font-weight:700;z-index:2;
+  }
+  .car-card .cat-tag{
+    position:absolute;top:10px;right:10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+    background:rgba(0,0,0,0.55);border:1px solid var(--hairline);color:var(--text-dim);
+    padding:3px 8px;border-radius:5px;z-index:2;
+  }
+  .car-card .body{padding:14px 16px 16px;}
+  .car-card .name{font-family:'Teko',sans-serif;font-size:22px;line-height:1.1;margin:0 0 2px;}
+  .car-card .owner{font-size:12px;color:var(--text-dim);margin:0 0 12px;}
+  .car-card .owner.free{color:var(--cyan);}
+  .car-card .owner.sold-out{color:var(--danger);}
+  .price-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+  .price-row .val{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:var(--amber);}
+  .price-row .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
+
+  button.action{
+    width:100%;padding:10px;border-radius:8px;border:none;cursor:pointer;
+    font-family:'Inter',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:.2px;
+    transition:filter .15s ease;
+  }
+  button.action:hover{filter:brightness(1.12);}
+  button.action:disabled{opacity:.4;cursor:not-allowed;}
+  button.buy{background:var(--cyan);color:#04211D;}
+  button.sell{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,71,87,0.35);}
+  button.ghost{background:transparent;color:var(--text-dim);border:1px solid var(--hairline);}
+
+  /* ---------- Pilot cards ---------- */
+  .pilot-card{background:var(--panel);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;margin-bottom:14px;}
+  .pilot-head{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .pilot-avatar{
+    width:48px;height:48px;border-radius:50%;background:var(--panel-2) center/cover;
+    border:1px solid var(--hairline);flex:none;
+  }
+  .pilot-info{flex:1;min-width:0;}
+  .pilot-info .name{font-family:'Teko',sans-serif;font-size:22px;margin:0;}
+  .pilot-stats{display:flex;gap:18px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:13px;}
+  .pilot-stats .stat b{color:var(--text);}
+  .pilot-stats .stat{color:var(--text-dim);}
+  .stat.ec b{color:var(--amber);}
+  .chevron{transition:transform .2s ease;color:var(--text-dim);}
+  .pilot-card.open .chevron{transform:rotate(90deg);}
+  .garage{display:none;margin-top:16px;padding-top:16px;border-top:1px solid var(--hairline);}
+  .pilot-card.open .garage{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+  .garage .empty{color:var(--text-dim);font-size:13px;grid-column:1/-1;}
+  .qty-badge{
+    position:absolute;bottom:10px;right:10px;z-index:2;
+    background:rgba(0,0,0,0.6);border:1px solid var(--hairline);color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;
+  }
+
+  /* ---------- Carreras / Clasificación ---------- */
+  .checkered-divider{
+    height:10px;border-radius:4px;margin:22px 0;
+    background-image:
+      linear-gradient(45deg,#0B0D10 25%,transparent 25%,transparent 75%,#0B0D10 75%,#0B0D10),
+      linear-gradient(45deg,#0B0D10 25%,transparent 25%,transparent 75%,#0B0D10 75%,#0B0D10);
+    background-size:12px 12px;background-position:0 0,6px 6px;background-color:#3a3f47;
+    opacity:.5;
+  }
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  thead th{
+    text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);
+    padding:10px 12px;border-bottom:1px solid var(--hairline);font-weight:600;white-space:nowrap;
+  }
+  tbody td{padding:11px 12px;border-bottom:1px solid var(--hairline);white-space:nowrap;}
+  tbody tr:hover{background:var(--panel-2);}
+  .table-wrap{background:var(--panel);border:1px solid var(--hairline);border-radius:var(--radius);overflow:hidden;overflow-x:auto;}
+  .pos-badge{
+    display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;
+    font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;background:var(--panel-2);color:var(--text-dim);
+  }
+  .pos-badge.p1{background:var(--amber-dim);color:var(--amber);}
+  .pos-badge.p2{background:rgba(139,147,161,0.18);color:#C9CFD8;}
+  .pos-badge.p3{background:rgba(205,127,50,0.18);color:#CD7F32;}
+  .class-tag{
+    font-size:10.5px;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.5px;
+    background:var(--panel-2);color:var(--text-dim);border:1px solid var(--hairline);font-weight:600;
+  }
+  .pts{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--cyan);}
+
+  .amount{font-family:'JetBrains Mono',monospace;font-weight:600;}
+  .amount.pos{color:var(--cyan);}
+  .amount.neg{color:var(--danger);}
+  .tag{font-size:11px;padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+  .tag.COMPRA{background:var(--danger-dim);color:var(--danger);}
+  .tag.VENTA{background:var(--cyan-dim);color:var(--cyan);}
+  .tag.PREMIO_CARRERA{background:var(--amber-dim);color:var(--amber);}
+  .tag.BONO{background:var(--amber-dim);color:var(--amber);}
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(5,6,8,0.7);backdrop-filter:blur(3px);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    width:100%;max-width:380px;background:var(--panel);border:1px solid var(--hairline);
+    border-radius:14px;padding:24px;
+  }
+  .modal h3{margin:0 0 4px;font-size:24px;}
+  .modal p.sub{color:var(--text-dim);font-size:13px;margin:0 0 18px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+  .field select, .field input{
+    width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--hairline);
+    background:var(--panel-2);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;
+  }
+  .field input.mono{font-family:'JetBrains Mono',monospace;letter-spacing:4px;font-size:18px;text-align:center;}
+  .modal-actions{display:flex;gap:10px;margin-top:18px;}
+  .modal-actions button{flex:1;}
+
+  /* ---------- Toasts ---------- */
+  #toasts{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px;max-width:320px;}
+  .toast{
+    padding:13px 16px;border-radius:10px;font-size:13.5px;border:1px solid var(--hairline);
+    background:var(--panel-2);box-shadow:0 8px 24px rgba(0,0,0,0.4);animation:slideIn .25s ease;
+  }
+  .toast.ok{border-color:rgba(0,229,199,0.4);}
+  .toast.err{border-color:rgba(255,71,87,0.4);}
+  @keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:none;}}
+
+  .spinner{
+    width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);
+    border-top-color:currentColor;display:inline-block;animation:spin .7s linear infinite;margin-right:8px;vertical-align:-2px;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .empty-state{padding:40px 20px;text-align:center;color:var(--text-dim);}
+
+  @media (max-width:640px){
+    .topbar-inner{flex-direction:column;align-items:stretch;gap:12px;}
+    nav.tabs{justify-content:space-between;}
+    nav.tabs button{padding:8px 8px;font-size:12.5px;flex:1;justify-content:center;}
+    .view-head h2{font-size:28px;}
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div>
-      <h1>Concesionario AC Academy</h1>
-      <label for="pilotoSelect">Piloto Activo: </label>
-      <select id="pilotoSelect" class="select-piloto" onchange="actualizarSaldo()"></select>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="badge">RO</div>
+      <div>
+        <h1>Race Online Shop</h1>
+        <span>Assetto Corsa Evo Academy · Economía de comunidad</span>
+      </div>
     </div>
-    <div>
-      <div>Saldo disponible:</div>
-      <div id="saldoDisplay" class="price">0 EC</div>
-    </div>
-  </header>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-view="concesionario"><span class="num">01</span> Concesionario</button>
+      <button class="tab-btn" data-view="pilotos"><span class="num">02</span> Pilotos</button>
+      <button class="tab-btn" data-view="carreras"><span class="num">03</span> Carreras</button>
+      <button class="tab-btn" data-view="clasificacion"><span class="num">04</span> Clasificación</button>
+      <button class="tab-btn" data-view="historial"><span class="num">05</span> Historial</button>
+    </nav>
+  </div>
+</header>
 
-  <h2>Catálogo de Vehículos</h2>
-  <div id="catalogo" class="grid">Cargando coches...</div>
+<main>
+
+  <!-- ============ 01 CONCESIONARIO ============ -->
+  <section class="view active" id="view-concesionario">
+    <div class="view-head">
+      <div>
+        <h2>Concesionario</h2>
+        <p>Catálogo de vehículos disponibles y garajes de la parrilla</p>
+      </div>
+      <input class="search-input" id="searchCoches" placeholder="Buscar coche…">
+    </div>
+    <div class="pillbar" id="filterCoches">
+      <button class="pill active" data-filter="todos">Todos</button>
+      <button class="pill" data-filter="disponibles">En concesionario</button>
+      <button class="pill" data-filter="agotados">Agotados / comprados</button>
+    </div>
+    <div class="grid" id="gridCoches"></div>
+  </section>
+
+  <!-- ============ 02 PILOTOS ============ -->
+  <section class="view" id="view-pilotos">
+    <div class="view-head">
+      <div>
+        <h2>Pilotos & Garajes</h2>
+        <p>Saldo actual y valor de garaje de cada piloto de la parrilla</p>
+      </div>
+    </div>
+    <div id="listaPilotos"></div>
+  </section>
+
+  <!-- ============ 03 CARRERAS ============ -->
+  <section class="view" id="view-carreras">
+    <div class="view-head">
+      <div>
+        <h2>Carreras</h2>
+        <p>Bolsa de premios del campeonato y estado de cada gran premio</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Carrera</th><th>Estado</th><th>P1</th><th>P2</th><th>P3</th>
+            <th>P4-P10</th><th>Pole</th><th>V. Rápida</th><th>Clean Racing</th>
+          </tr>
+        </thead>
+        <tbody id="tablaCarreras"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 04 CLASIFICACIÓN ============ -->
+  <section class="view" id="view-clasificacion">
+    <div class="view-head">
+      <div>
+        <h2>Clasificación</h2>
+        <p>Clasificación general del campeonato por piloto y carrera</p>
+      </div>
+      <input class="search-input" id="searchClasificacion" placeholder="Buscar piloto o equipo…">
+    </div>
+    <div class="checkered-divider"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pos.</th><th>Clase</th><th>Piloto</th><th>Lic.</th><th>Equipo</th><th>Marca</th>
+            <th>Espec.</th><th>Puntos</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Pen.</th>
+          </tr>
+        </thead>
+        <tbody id="tablaClasificacion"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 05 HISTORIAL ============ -->
+  <section class="view" id="view-historial">
+    <div class="view-head">
+      <div>
+        <h2>Historial de Transacciones</h2>
+        <p>Registro público e inmutable de todos los movimientos de EvoCredits</p>
+      </div>
+      <input class="search-input" id="searchHistorial" placeholder="Filtrar por piloto…">
+    </div>
+    <div class="pillbar" id="filterHistorial">
+      <button class="pill active" data-filter="TODOS">Todos</button>
+      <button class="pill" data-filter="COMPRA">Compras</button>
+      <button class="pill" data-filter="VENTA">Ventas</button>
+      <button class="pill" data-filter="PREMIO_CARRERA">Premios</button>
+      <button class="pill" data-filter="BONO">Bonos</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Fecha</th><th>Piloto</th><th>Tipo</th><th>Detalle</th><th>Monto</th></tr></thead>
+        <tbody id="tablaHistorial"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ MODAL: COMPRAR ============ -->
+<div class="overlay" id="modalComprar">
+  <div class="modal">
+    <h3 id="comprarTitulo">Comprar coche</h3>
+    <p class="sub" id="comprarSub"></p>
+    <div class="field">
+      <label>Selecciona tu piloto</label>
+      <select id="comprarPiloto"></select>
+    </div>
+    <div class="field">
+      <label>PIN de seguridad</label>
+      <input type="password" inputmode="numeric" maxlength="4" class="mono" id="comprarPin" placeholder="••••">
+    </div>
+    <div class="modal-actions">
+      <button class="action ghost" onclick="cerrarModal('modalComprar')">Cancelar</button>
+      <button class="action buy" id="btnConfirmarCompra">Confirmar compra</button>
+    </div>
+  </div>
 </div>
 
+<!-- ============ MODAL: VENDER ============ -->
+<div class="overlay" id="modalVender">
+  <div class="modal">
+    <h3 id="venderTitulo">Vender coche</h3>
+    <p class="sub" id="venderSub"></p>
+    <div class="field">
+      <label>PIN de seguridad</label>
+      <input type="password" inputmode="numeric" maxlength="4" class="mono" id="venderPin" placeholder="••••">
+    </div>
+    <div class="modal-actions">
+      <button class="action ghost" onclick="cerrarModal('modalVender')">Cancelar</button>
+      <button class="action sell" id="btnConfirmarVenta">Confirmar venta</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
 <script>
-  // URL actualizada del ejecutable de Google Apps Script
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVlwfOUnvciGoVOJ1KJ3uN3W70GuRJQuKBhqMaZoosp0G3BqA/exec';
+/* ==========================================================
+   CONFIGURACIÓN — URL de tu Web App de Apps Script
+   ========================================================== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbzzY_coF8I76jbWPgGeURVlwfOUnvciGoVOJ1KJ3uN3W70GuRJQuKBhqMaZoosp0G3BqA/exec';
 
-  let dbData = { pilotos: [], coches: [] };
+/* ==========================================================
+   ESTADO GLOBAL
+   ========================================================== */
+let DB = { pilotos: [], coches: [], carreras: [], clasificacion: [], historial: [] };
+let cocheFilter = 'todos';
+let historialFilter = 'TODOS';
+let coches_query = '';
+let historial_query = '';
+let clasificacion_query = '';
+let cocheSeleccionadoId = null;
+let ventaContext = null; // { idCoche, idPiloto }
 
-  async function cargarDatos() {
-    try {
-      const response = await fetch(WEB_APP_URL);
-      const json = await response.json();
-      if (!json.ok) throw new Error(json.error);
-      
-      dbData = json.data;
-      poblarPilotos();
-      renderCatalogo();
-    } catch (err) {
-      alert('Error al cargar datos: ' + err.message);
+/* ==========================================================
+   HELPERS DE RED
+   ========================================================== */
+async function apiGet(){
+  const res = await fetch(API_URL);
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error || 'Error al cargar datos');
+  return json.data;
+}
+
+async function apiPost(payload){
+  // Content-Type text/plain evita el preflight CORS en Apps Script
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error || 'Error en la operación');
+  return json;
+}
+
+/* ==========================================================
+   TOASTS
+   ========================================================== */
+function toast(msg, type='ok'){
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type === 'ok' ? 'ok' : 'err');
+  el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>{ el.remove(); }, 4200);
+}
+
+/* ==========================================================
+   NAVEGACIÓN DE PESTAÑAS
+   ========================================================== */
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.tab-btn');
+  if(!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-' + btn.dataset.view).classList.add('active');
+});
+
+/* ==========================================================
+   CARGA INICIAL
+   ========================================================== */
+async function cargarTodo(){
+  try{
+    DB = await apiGet();
+    renderCoches();
+    renderPilotos();
+    renderCarreras();
+    renderClasificacion();
+    renderHistorial();
+  }catch(err){
+    toast('No se pudieron cargar los datos: ' + err.message, 'err');
+  }
+}
+
+/* ==========================================================
+   MODELO DE STOCK
+   ----------------------------------------------------------
+   Un coche con la columna Stock rellena es un coche "de stock
+   compartido": varias unidades intercambiables, disponibles
+   mientras Stock > 0. Propietario_ID se mantiene siempre en
+   CONCESIONARIO para estos coches — no representa un dueño único.
+   Para saber cuántas unidades tiene CADA piloto, se cuenta a
+   partir del Historial (COMPRA suma 1, VENTA resta 1).
+
+   Un coche sin Stock es "único": Propietario_ID indica su dueño
+   directamente (o CONCESIONARIO si está libre).
+   ========================================================== */
+function esCocheDeStock(c){
+  return c.Stock !== undefined && c.Stock !== null && c.Stock !== '';
+}
+function cocheDisponible(c){
+  if(esCocheDeStock(c)) return Number(c.Stock) > 0;
+  return String(c.Propietario_ID).trim() === 'CONCESIONARIO';
+}
+function unidadesPropias(idPiloto, idCoche){
+  const marca = '(' + idCoche + ')';
+  let total = 0;
+  DB.historial.forEach(h=>{
+    if(String(h.ID_Piloto) !== String(idPiloto)) return;
+    if(String(h.Detalle).indexOf(marca) === -1) return;
+    if(h.Tipo_Operacion === 'COMPRA') total += 1;
+    if(h.Tipo_Operacion === 'VENTA') total -= 1;
+  });
+  return total;
+}
+
+/* ==========================================================
+   CONCESIONARIO
+   ========================================================== */
+function nombrePiloto(id){
+  const p = DB.pilotos.find(p => String(p.ID_Piloto) === String(id));
+  return p ? p.Nombre_Piloto : id;
+}
+
+function renderCoches(){
+  const grid = document.getElementById('gridCoches');
+  let list = DB.coches.slice();
+
+  if(cocheFilter === 'disponibles') list = list.filter(c => cocheDisponible(c));
+  if(cocheFilter === 'agotados') list = list.filter(c => !cocheDisponible(c));
+  if(coches_query.trim()){
+    const q = coches_query.trim().toLowerCase();
+    list = list.filter(c => String(c.Nombre_Coche).toLowerCase().includes(q) || String(c.Categoria).toLowerCase().includes(q));
+  }
+
+  if(list.length === 0){
+    grid.innerHTML = '<div class="empty-state">No hay coches que coincidan con este filtro.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(c=>{
+    const stockCar = esCocheDeStock(c);
+    const disponible = cocheDisponible(c);
+    let ownerLine;
+    if(stockCar){
+      const stockActual = Number(c.Stock) || 0;
+      ownerLine = disponible
+        ? ('Disponible en concesionario · Stock: ' + stockActual)
+        : 'Agotado en concesionario';
+    } else {
+      ownerLine = disponible ? 'Disponible en concesionario' : ('Propiedad de ' + nombrePiloto(c.Propietario_ID));
     }
-  }
+    const ownerClass = disponible ? 'free' : (stockCar ? 'sold-out' : '');
 
-  function poblarPilotos() {
-    const select = document.getElementById('pilotoSelect');
-    select.innerHTML = '';
-    dbData.pilotos.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.ID_Piloto;
-      opt.textContent = p.Nombre_Piloto || p.ID_Piloto;
-      select.appendChild(opt);
-    });
-    actualizarSaldo();
-  }
-
-  function actualizarSaldo() {
-    const idPiloto = document.getElementById('pilotoSelect').value;
-    const piloto = dbData.pilotos.find(p => String(p.ID_Piloto) === String(idPiloto));
-    if (piloto) {
-      document.getElementById('saldoDisplay').textContent = (piloto.Saldo_EC || 0) + ' EC';
-    }
-  }
-
-  function renderCatalogo() {
-    const container = document.getElementById('catalogo');
-    container.innerHTML = '';
-
-    dbData.coches.forEach(coche => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      
-      const esStock = coche.Stock !== undefined && coche.Stock !== '';
-      const stockTexto = esStock ? `Stock: ${coche.Stock}` : (coche.Propietario_ID === 'CONCESIONARIO' ? 'Disponible' : 'Vendido');
-      
-      card.innerHTML = `
-        <div>
-          <h3>${coche.Nombre_Coche || coche.ID_Coche}</h3>
-          <p>Estado/Stock: ${stockTexto}</p>
-          <p class="price">${coche.Precio_Compra_EC} EC</p>
+    return `
+      <div class="car-card">
+        <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
+          <div class="stripe"></div>
+          <div class="number">${String(c.ID_Coche).slice(-2)}</div>
+          <div class="cat-tag">${c.Categoria || ''}</div>
         </div>
-        <button onclick="comprar('${coche.ID_Coche}')">Comprar Coche</button>
-      `;
-      container.appendChild(card);
-    });
+        <div class="body">
+          <p class="name">${c.Nombre_Coche}</p>
+          <p class="owner ${ownerClass}">${ownerLine}</p>
+          <div class="price-row">
+            <span class="label">Precio</span>
+            <span class="val">${Number(c.Precio_Compra_EC).toLocaleString()} EC</span>
+          </div>
+          ${disponible
+            ? `<button class="action buy" onclick="abrirModalComprar('${c.ID_Coche}')">Comprar coche</button>`
+            : `<button class="action ghost" disabled>${stockCar ? 'Sin stock' : 'En garaje de piloto'}</button>`
+          }
+        </div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('filterCoches').addEventListener('click', e=>{
+  const btn = e.target.closest('.pill');
+  if(!btn) return;
+  document.querySelectorAll('#filterCoches .pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  cocheFilter = btn.dataset.filter;
+  renderCoches();
+});
+document.getElementById('searchCoches').addEventListener('input', e=>{
+  coches_query = e.target.value;
+  renderCoches();
+});
+
+/* ---------- Modal comprar ---------- */
+function abrirModalComprar(idCoche){
+  cocheSeleccionadoId = idCoche;
+  const coche = DB.coches.find(c => String(c.ID_Coche) === String(idCoche));
+  document.getElementById('comprarTitulo').textContent = 'Comprar ' + coche.Nombre_Coche;
+  document.getElementById('comprarSub').textContent = 'Precio: ' + Number(coche.Precio_Compra_EC).toLocaleString() + ' EC';
+  const sel = document.getElementById('comprarPiloto');
+  sel.innerHTML = DB.pilotos.map(p => `<option value="${p.ID_Piloto}">${p.Nombre_Piloto} (${Number(p.Saldo_EC).toLocaleString()} EC)</option>`).join('');
+  document.getElementById('comprarPin').value = '';
+  document.getElementById('modalComprar').classList.add('show');
+}
+
+document.getElementById('btnConfirmarCompra').addEventListener('click', async ()=>{
+  const idPiloto = document.getElementById('comprarPiloto').value;
+  const pin = document.getElementById('comprarPin').value;
+  const btn = document.getElementById('btnConfirmarCompra');
+  if(!pin){ toast('Introduce tu PIN de seguridad.', 'err'); return; }
+
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span>Procesando transacción…';
+  try{
+    const res = await apiPost({ action:'comprarCoche', idPiloto, pin, idCoche: cocheSeleccionadoId });
+    toast(res.message || '¡Compra realizada con éxito!', 'ok');
+    cerrarModal('modalComprar');
+    await cargarTodo();
+  }catch(err){
+    toast(err.message, 'err');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+
+/* ---------- Modal vender ---------- */
+function abrirModalVender(idCoche, idPiloto){
+  ventaContext = { idCoche, idPiloto };
+  const coche = DB.coches.find(c => String(c.ID_Coche) === String(idCoche));
+  document.getElementById('venderTitulo').textContent = 'Vender ' + coche.Nombre_Coche;
+  document.getElementById('venderSub').textContent = 'Recibirás ' + Number(coche.Precio_Venta_EC).toLocaleString() + ' EC del concesionario';
+  document.getElementById('venderPin').value = '';
+  document.getElementById('modalVender').classList.add('show');
+}
+
+document.getElementById('btnConfirmarVenta').addEventListener('click', async ()=>{
+  const pin = document.getElementById('venderPin').value;
+  const btn = document.getElementById('btnConfirmarVenta');
+  if(!pin){ toast('Introduce tu PIN de seguridad.', 'err'); return; }
+  if(!ventaContext){ toast('No se ha seleccionado ningún coche.', 'err'); return; }
+
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span>Procesando transacción…';
+  try{
+    const res = await apiPost({ action:'venderCoche', idPiloto: ventaContext.idPiloto, pin, idCoche: ventaContext.idCoche });
+    toast(res.message || 'Coche vendido con éxito.', 'ok');
+    cerrarModal('modalVender');
+    await cargarTodo();
+  }catch(err){
+    toast(err.message, 'err');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+
+function cerrarModal(id){
+  document.getElementById(id).classList.remove('show');
+}
+document.querySelectorAll('.overlay').forEach(ov=>{
+  ov.addEventListener('click', e=>{ if(e.target === ov) ov.classList.remove('show'); });
+});
+
+/* ==========================================================
+   PILOTOS & GARAJES
+   ========================================================== */
+function cochesDelPiloto(idPiloto){
+  // Coches únicos que le pertenecen directamente
+  const unicos = DB.coches
+    .filter(c => !esCocheDeStock(c) && String(c.Propietario_ID) === String(idPiloto))
+    .map(c => ({ coche: c, cantidad: 1 }));
+
+  // Coches de stock compartido de los que posee al menos 1 unidad
+  const deStock = DB.coches
+    .filter(c => esCocheDeStock(c))
+    .map(c => ({ coche: c, cantidad: unidadesPropias(idPiloto, c.ID_Coche) }))
+    .filter(x => x.cantidad > 0);
+
+  return unicos.concat(deStock);
+}
+
+function valorGaraje(idPiloto){
+  return cochesDelPiloto(idPiloto)
+    .reduce((sum, x) => sum + (Number(x.coche.Precio_Venta_EC) || 0) * x.cantidad, 0);
+}
+
+function renderPilotos(){
+  const cont = document.getElementById('listaPilotos');
+  if(DB.pilotos.length === 0){
+    cont.innerHTML = '<div class="empty-state">Todavía no hay pilotos registrados.</div>';
+    return;
+  }
+  cont.innerHTML = DB.pilotos.map(p=>{
+    const misCoches = cochesDelPiloto(p.ID_Piloto);
+    const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
+    const garajeHtml = misCoches.length
+      ? misCoches.map(({coche:c, cantidad}) => `
+        <div class="car-card">
+          <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
+            <div class="stripe"></div>
+            <div class="number">${String(c.ID_Coche).slice(-2)}</div>
+            <div class="cat-tag">${c.Categoria || ''}</div>
+            ${cantidad > 1 ? `<div class="qty-badge">x${cantidad}</div>` : ''}
+          </div>
+          <div class="body">
+            <p class="name">${c.Nombre_Coche}</p>
+            <p class="owner">Valor de venta: ${Number(c.Precio_Venta_EC).toLocaleString()} EC ${cantidad > 1 ? '/ unidad' : ''}</p>
+            <button class="action sell" onclick="event.stopPropagation(); abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')">Vender ${cantidad > 1 ? '1 unidad' : ''} por ${Number(c.Precio_Venta_EC).toLocaleString()} EC</button>
+          </div>
+        </div>`).join('')
+      : '<div class="empty">Este piloto no tiene coches en su garaje.</div>';
+
+    return `
+      <div class="pilot-card" id="pc-${p.ID_Piloto}">
+        <div class="pilot-head" onclick="togglePiloto('${p.ID_Piloto}')">
+          <div class="pilot-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
+          <div class="pilot-info">
+            <p class="name">${p.Nombre_Piloto}</p>
+            <div class="pilot-stats">
+              <span class="stat ec">Saldo: <b>${Number(p.Saldo_EC).toLocaleString()} EC</b></span>
+              <span class="stat">Garaje: <b>${totalUnidades}</b> coches</span>
+              <span class="stat">Valor garaje: <b>${valorGaraje(p.ID_Piloto).toLocaleString()} EC</b></span>
+            </div>
+          </div>
+          <span class="chevron">›</span>
+        </div>
+        <div class="garage">${garajeHtml}</div>
+      </div>`;
+  }).join('');
+}
+
+function togglePiloto(id){
+  document.getElementById('pc-' + id).classList.toggle('open');
+}
+
+/* ==========================================================
+   CARRERAS (bolsa de premios configurada)
+   ========================================================== */
+function renderCarreras(){
+  const tbody = document.getElementById('tablaCarreras');
+  if(DB.carreras.length === 0){
+    tbody.innerHTML = '<tr><td colspan="9" style="color:var(--text-dim);">Sin carreras configuradas.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = DB.carreras.map(c => `
+    <tr>
+      <td>${c.Nombre_Carrera}</td>
+      <td>${c.Estado}</td>
+      <td class="amount">${c.Posicion_1_Premio}</td>
+      <td class="amount">${c.Posicion_2_Premio}</td>
+      <td class="amount">${c.Posicion_3_Premio}</td>
+      <td class="amount">${c.Posicion_4_10_Premio}</td>
+      <td class="amount">${c.Pole_Bonus}</td>
+      <td class="amount">${c.Vuelta_Rapida_Bonus}</td>
+      <td class="amount">${c.Clean_Racing_Bonus}</td>
+    </tr>`).join('');
+}
+
+/* ==========================================================
+   CLASIFICACIÓN GENERAL (hoja Clasificacion)
+   ========================================================== */
+function renderClasificacion(){
+  const tbody = document.getElementById('tablaClasificacion');
+  let list = DB.clasificacion.slice();
+
+  if(clasificacion_query.trim()){
+    const q = clasificacion_query.trim().toLowerCase();
+    list = list.filter(c =>
+      String(c['Piloto']).toLowerCase().includes(q) ||
+      String(c['Equipo']).toLowerCase().includes(q) ||
+      String(c['Marca']).toLowerCase().includes(q)
+    );
   }
 
-  async function comprar(idCoche) {
-    const idPiloto = document.getElementById('pilotoSelect').value;
-    if (!idPiloto) return alert('Selecciona un piloto.');
+  // Ordena por Posición si está rellena; si no, por Puntos descendente
+  list.sort((a,b)=>{
+    const pa = Number(a['Posición']), pb = Number(b['Posición']);
+    if(!isNaN(pa) && !isNaN(pb) && pa !== pb) return pa - pb;
+    return (Number(b['Puntos']) || 0) - (Number(a['Puntos']) || 0);
+  });
 
-    const pin = prompt('Introduce tu PIN de seguridad:');
-    if (!pin) return;
-
-    try {
-      // Petición simple usando text/plain para evitar el preflight CORS en Apps Script
-      const response = await fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          action: 'comprarCoche',
-          idPiloto: idPiloto,
-          idCoche: idCoche,
-          pin: pin
-        })
-      });
-
-      const json = await response.json();
-      if (!json.ok) throw new Error(json.error);
-
-      alert(json.message);
-      cargarDatos(); // Recargar datos para actualizar la UI
-    } catch (err) {
-      alert('Error en la transacción: ' + err.message);
-    }
+  if(list.length === 0){
+    tbody.innerHTML = '<tr><td colspan="13" style="color:var(--text-dim);">Todavía no hay clasificación registrada.</td></tr>';
+    return;
   }
 
-  // Inicializar al cargar la página
-  window.onload = cargarDatos;
+  tbody.innerHTML = list.map((c,i)=>{
+    const posBadgeClass = i===0 ? 'p1' : (i===1 ? 'p2' : (i===2 ? 'p3' : ''));
+    return `
+    <tr>
+      <td><span class="pos-badge ${posBadgeClass}">${c['Posición'] || (i+1)}</span></td>
+      <td><span class="class-tag">${c['Clase'] || ''}</span></td>
+      <td>${c['Piloto'] || ''}</td>
+      <td>${c['Lic.'] || ''}</td>
+      <td>${c['Equipo'] || ''}</td>
+      <td>${c['Marca'] || ''}</td>
+      <td>${c['Espec.'] || ''}</td>
+      <td class="pts">${c['Puntos'] || 0}</td>
+      <td class="amount">${c['R1'] ?? ''}</td>
+      <td class="amount">${c['R2'] ?? ''}</td>
+      <td class="amount">${c['R3'] ?? ''}</td>
+      <td class="amount">${c['R4'] ?? ''}</td>
+      <td class="amount ${Number(c['Pen.']) < 0 ? 'neg' : ''}">${c['Pen.'] ?? 0}</td>
+    </tr>`;
+  }).join('');
+}
+
+document.getElementById('searchClasificacion').addEventListener('input', e=>{
+  clasificacion_query = e.target.value;
+  renderClasificacion();
+});
+
+/* ==========================================================
+   HISTORIAL
+   ========================================================== */
+function renderHistorial(){
+  const tbody = document.getElementById('tablaHistorial');
+  let list = DB.historial.slice().reverse();
+
+  if(historialFilter !== 'TODOS') list = list.filter(h => h.Tipo_Operacion === historialFilter);
+  if(historial_query.trim()){
+    const q = historial_query.trim().toLowerCase();
+    list = list.filter(h => nombrePiloto(h.ID_Piloto).toLowerCase().includes(q));
+  }
+
+  if(list.length === 0){
+    tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-dim);">No hay movimientos que coincidan con este filtro.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map(h=>{
+    const monto = Number(h.Monto_EC) || 0;
+    const cls = monto >= 0 ? 'pos' : 'neg';
+    const signo = monto >= 0 ? '+' : '';
+    return `
+      <tr>
+        <td class="mono" style="color:var(--text-dim);font-size:12.5px;">${h.Fecha_Hora}</td>
+        <td>${nombrePiloto(h.ID_Piloto)}</td>
+        <td><span class="tag ${h.Tipo_Operacion}">${h.Tipo_Operacion}</span></td>
+        <td style="color:var(--text-dim);">${h.Detalle}</td>
+        <td class="amount ${cls}">${signo}${monto.toLocaleString()} EC</td>
+      </tr>`;
+  }).join('');
+}
+
+document.getElementById('filterHistorial').addEventListener('click', e=>{
+  const btn = e.target.closest('.pill');
+  if(!btn) return;
+  document.querySelectorAll('#filterHistorial .pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  historialFilter = btn.dataset.filter;
+  renderHistorial();
+});
+document.getElementById('searchHistorial').addEventListener('input', e=>{
+  historial_query = e.target.value;
+  renderHistorial();
+});
+
+/* ==========================================================
+   INICIO
+   ========================================================== */
+cargarTodo();
 </script>
 
 </body>
