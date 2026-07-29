@@ -175,11 +175,20 @@
     font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;
   }
 
-  /* Calendario: fichas grandes, aspect-ratio 16:9 con foto de fondo + podio debajo */
-  .calendario-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;}
+  /* Calendario: Grid 60% Desktop, 80% Mobile (2 por fila siempre) */
+  .calendario-grid{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:22px;
+    width:60%;
+  }
   .circuit-tile{
-    background:var(--panel);border:1px solid var(--hairline);border-radius:14px;
-    overflow:hidden;transition:border-color .15s ease,transform .15s ease;
+    background:var(--panel);
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    overflow:hidden;
+    transition:border-color .15s ease,transform .15s ease;
+    width: 100%;
   }
   .circuit-tile:hover{border-color:#39404C;}
   .circuit-tile .photo-big{
@@ -192,11 +201,20 @@
     content:'';position:absolute;inset:0;
     background:linear-gradient(180deg,transparent 30%, rgba(11,13,16,0.92) 100%);
   }
+  /* Etiqueta solicitada */
   .circuit-tile .photo-big .cat-tag{
-    position:absolute;top:10px;right:10px;z-index:2;
-    font-size:10px;letter-spacing:1px;text-transform:uppercase;
-    background:rgba(0,0,0,0.55);border:1px solid var(--hairline);color:var(--text-dim);
-    padding:3px 8px;border-radius:5px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.70);
+    border: 1px solid var(--hairline);
+    color: var(--text-dim);
+    padding: 3px 8px;
+    border-radius: 5px;
+    z-index: 2;
   }
   .circuit-tile .photo-big .info{position:absolute;left:20px;right:20px;bottom:16px;z-index:2;}
   .circuit-tile .photo-big .info .name{font-family:'Teko',sans-serif;font-size:32px;margin:0 0 2px;line-height:1.1;}
@@ -210,7 +228,13 @@
   .podio-row .medal{font-size:18px;width:24px;text-align:center;flex:none;}
   .podio-row .pos-name{flex:1;color:var(--text);}
   .podio-empty{color:var(--text-dim);font-size:13px;}
-  @media (max-width:760px){ .calendario-grid{grid-template-columns:1fr;} }
+  
+  @media (max-width:760px){ 
+    .calendario-grid{ width:80%; }
+  }
+  @media (max-width:480px){ 
+    .calendario-grid{ width:100%; }
+  }
 
   /* Pilotos: mini tabla de estadísticas antes del garaje (max 60%) */
   .pilot-stats-mini{
@@ -501,8 +525,7 @@
 <div id="toasts"></div>
 
 <script>
-// Mantener el uso de fetch vía Apps Script macro
-const API_URL = 'https://script.google.com/macros/s/AKfycbwr_24kFfM88f-ASTomva4MxtDZKu_D3bRd-fqz5hq_65_bIJ3SAOvMou5cYndoB2oLNA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwWx30KEUsjYxwSrt39DlYfC62ojZiEoeD4xyUO7Ff_rDC7cKVc9Y9f0eT9rFRSmrLXYA/exec';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
 let cocheFilter = 'todos';
@@ -513,7 +536,6 @@ let historial_query = '';
 let cocheSeleccionadoId = null;
 let ventaContext = null;
 
-// Obtener valor robusto ignorando mayúsculas y acentos
 function normKey_(s){
   return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
 }
@@ -583,14 +605,36 @@ function poblarCategorias(){
     categorias.map(cat => `<option value="${cat}">${cat}</option>`).join('');
 }
 
+// NUEVA LÓGICA DE FILTRADO (ROBUSTA)
+function cocheDisponible(c) {
+    const stockVal = getVal(c, 'Stock');
+    const hasStock = stockVal !== undefined && stockVal !== null && String(stockVal).trim() !== '';
+    
+    const propVal = getVal(c, 'Propietario_ID') || getVal(c, 'Propietario');
+    const propID = String(propVal || '').trim().toUpperCase();
+    
+    // Si la hoja tiene control de stock
+    if (hasStock) {
+        const numStock = Number(stockVal);
+        // Si se agotó el stock numérico, está "Agotado"
+        if (isNaN(numStock) || numStock <= 0) return false;
+        return true; 
+    }
+    
+    // Si NO hay control de stock, dependemos de si hay un dueño escrito
+    if (propID !== '' && propID !== 'CONCESIONARIO' && propID !== 'LIBRE') {
+        // Está comprado
+        return false;
+    }
+    
+    return true; // Si llega aquí, está libre
+}
+
 function esCocheDeStock(c){
   const stock = getVal(c, 'Stock');
-  return stock !== undefined && stock !== null && stock !== '';
+  return stock !== undefined && stock !== null && String(stock).trim() !== '';
 }
-function cocheDisponible(c){
-  if(esCocheDeStock(c)) return Number(getVal(c, 'Stock')) > 0;
-  return String(getVal(c, 'Propietario_ID') || '').trim().toUpperCase() === 'CONCESIONARIO';
-}
+
 function unidadesPropias(idPiloto, idCoche){
   const marca = '(' + idCoche + ')';
   let total = 0;
@@ -639,7 +683,7 @@ function renderCoches(){
         ? ('Disponible en concesionario · Stock: ' + stockActual)
         : 'Agotado en concesionario';
     } else {
-      ownerLine = disponible ? 'Disponible en concesionario' : ('Propiedad de ' + nombrePiloto(getVal(c, 'Propietario_ID')));
+      ownerLine = disponible ? 'Disponible en concesionario' : ('Propiedad de ' + nombrePiloto(getVal(c, 'Propietario_ID') || getVal(c, 'Propietario')));
     }
     const ownerClass = disponible ? 'free' : (stockCar ? 'sold-out' : '');
     const precioCompra = Number(c.Precio_Compra_OC ?? c.Precio_Compra_EC ?? 0);
@@ -765,7 +809,7 @@ document.querySelectorAll('.overlay').forEach(ov=>{
 function cochesDelPiloto(idPiloto){
   if (!Array.isArray(DB.coches)) return [];
   const unicos = DB.coches
-    .filter(c => !esCocheDeStock(c) && String(getVal(c, 'Propietario_ID')) === String(idPiloto))
+    .filter(c => !esCocheDeStock(c) && String(getVal(c, 'Propietario_ID') || getVal(c, 'Propietario')) === String(idPiloto))
     .map(c => ({ coche: c, cantidad: 1 }));
 
   const deStock = DB.coches
@@ -864,7 +908,7 @@ function renderCalendario(){
     return `
       <div class="circuit-tile">
         <div class="photo-big" style="background-image:url('${img || ''}')" onclick="abrirModalResultados('${ronda}')">
-          <div class="cat-tag">Round ${ronda || ''}</div>
+          <div class="cat-tag">RONDA ${ronda || ''}</div>
           <div class="info">
             <p class="name">${circuito || ''}</p>
             <p class="date">${fecha ? 'Fecha: ' + fecha : ''}</p>
@@ -903,7 +947,7 @@ function abrirModalResultados(ronda){
   const circuito = item ? getVal(item, 'Circuito') : '';
   const fecha = item ? getVal(item, 'Fecha') : '';
 
-  document.getElementById('resultadosTitulo').textContent = 'Resultados · Round ' + ronda + (circuito ? ' — ' + circuito : '');
+  document.getElementById('resultadosTitulo').textContent = 'Resultados · Ronda ' + ronda + (circuito ? ' — ' + circuito : '');
   document.getElementById('resultadosSub').textContent = fecha ? ('Fecha: ' + fecha) : '';
 
   const tbody = document.getElementById('tablaResultados');
@@ -914,7 +958,6 @@ function abrirModalResultados(ronda){
     tbody.innerHTML = '<tr><td colspan="11" style="color:var(--text-dim);">Todavía no hay resultados para esta carrera.</td></tr>';
   } else {
     tbody.innerHTML = resultados.map((r, i) => {
-      // Cálculo de pos-badge dinámico
       const pos = getVal(r, 'Posicion') || (i+1);
       const posNum = Number(pos);
       const posBadgeClass = posNum === 1 ? 'p1' : (posNum === 2 ? 'p2' : (posNum === 3 ? 'p3' : ''));
