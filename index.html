@@ -15,11 +15,13 @@
     --text: #E7EAEE;
     --text-dim: #8B93A1;
     --cyan: #f01c26;
-    --cyan-dim: #F0979B;
+    --cyan-dim: #4d1a1c;
     --amber: #FFB020;
     --amber-dim: rgba(255,176,32,0.12);
     --danger: #FF4757;
     --danger-dim: rgba(255,71,87,0.12);
+    --green: #00E5C7;
+    --green-dim: rgba(0, 229, 199, 0.12);
     --radius: 10px;
   }
   *{box-sizing:border-box;}
@@ -44,7 +46,7 @@
     border-bottom:1px solid var(--hairline);
   }
   .topbar-inner{
-    max-width:1180px;margin:0 auto;padding:14px 20px;
+    max-width:1500px;margin:0 auto;padding:14px 20px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
   }
   .brand{display:flex;align-items:center;gap:10px;}
@@ -73,7 +75,7 @@
   nav.tabs button.active .num{background:var(--cyan);}
   nav.tabs button:hover{color:var(--text);}
 
-  main{max-width:1180px;margin:0 auto;padding:28px 20px 80px;}
+  main{max-width:1500px;margin:0 auto;padding:28px 20px 80px;}
   section.view{display:none;}
   section.view.active{display:block;animation:fadeIn .25s ease;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
@@ -173,6 +175,61 @@
     font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;
   }
 
+  /* Calendario: fichas grandes, aspect-ratio 16:9 con foto de fondo + podio debajo */
+  .calendario-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;}
+  .circuit-tile{
+    background:var(--panel);border:1px solid var(--hairline);border-radius:14px;
+    overflow:hidden;transition:border-color .15s ease,transform .15s ease;
+  }
+  .circuit-tile:hover{border-color:#39404C;}
+  .circuit-tile .photo-big{
+    position:relative;cursor:pointer;
+    background:var(--panel-2) center/cover no-repeat;
+    aspect-ratio: 16 / 9;
+    height: auto;
+  }
+  .circuit-tile .photo-big::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 30%, rgba(11,13,16,0.92) 100%);
+  }
+  .circuit-tile .photo-big .cat-tag{
+    position:absolute;top:10px;right:10px;z-index:2;
+    font-size:10px;letter-spacing:1px;text-transform:uppercase;
+    background:rgba(0,0,0,0.55);border:1px solid var(--hairline);color:var(--text-dim);
+    padding:3px 8px;border-radius:5px;
+  }
+  .circuit-tile .photo-big .info{position:absolute;left:20px;right:20px;bottom:16px;z-index:2;}
+  .circuit-tile .photo-big .info .name{font-family:'Teko',sans-serif;font-size:32px;margin:0 0 2px;line-height:1.1;}
+  .circuit-tile .photo-big .info .date{font-size:13px;color:var(--text-dim);margin:0;}
+  .circuit-tile .podio-box{padding:14px 18px 18px;border-top:1px solid var(--hairline);}
+  .circuit-tile .podio-box h4{
+    margin:0 0 10px;font-size:12px;letter-spacing:1px;text-transform:uppercase;
+    color:var(--text-dim);font-family:'Inter',sans-serif;font-weight:700;
+  }
+  .podio-row{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14.5px;}
+  .podio-row .medal{font-size:18px;width:24px;text-align:center;flex:none;}
+  .podio-row .pos-name{flex:1;color:var(--text);}
+  .podio-empty{color:var(--text-dim);font-size:13px;}
+  @media (max-width:760px){ .calendario-grid{grid-template-columns:1fr;} }
+
+  /* Pilotos: mini tabla de estadísticas antes del garaje (max 60%) */
+  .pilot-stats-mini{
+    grid-column: 1/-1; display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 10px; margin-bottom: 16px;
+    max-width: 60%;
+  }
+  @media (max-width: 640px) {
+    .pilot-stats-mini { max-width: 100%; }
+  }
+  .stat-box{
+    background:var(--panel-2);border:1px solid var(--hairline);border-radius:10px;
+    padding:12px 10px;text-align:center;
+  }
+  .stat-box .emoji{font-size:22px;display:block;margin-bottom:4px;}
+  .stat-box .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--amber);display:block;}
+  .stat-box .lbl{font-size:10.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;}
+
   .checkered-divider{
     height:10px;border-radius:4px;margin:22px 0;
     background-image:
@@ -200,14 +257,15 @@
     font-size:10.5px;padding:3px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.5px;
     background:var(--panel-2);color:var(--text-dim);border:1px solid var(--hairline);font-weight:600;
   }
-  .pts{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--cyan);}
+  .pts{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text);}
+  .pts-white{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text);}
 
   .amount{font-family:'JetBrains Mono',monospace;font-weight:600;}
-  .amount.pos{color:var(--cyan);}
+  .amount.pos{color:var(--green);}
   .amount.neg{color:var(--danger);}
   .tag{font-size:11px;padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
   .tag.COMPRA{background:var(--danger-dim);color:var(--danger);}
-  .tag.VENTA{background:var(--cyan-dim);color:var(--cyan);}
+  .tag.VENTA{background:var(--green-dim);color:var(--green);}
   .tag.PREMIO_CARRERA{background:var(--amber-dim);color:var(--amber);}
   .tag.BONO{background:var(--amber-dim);color:var(--amber);}
 
@@ -272,7 +330,7 @@
     <nav class="tabs" id="tabs">
       <button class="tab-btn active" data-view="concesionario"><span class="num">01</span> Concesionario</button>
       <button class="tab-btn" data-view="pilotos"><span class="num">02</span> Pilotos</button>
-      <button class="tab-btn" data-view="carreras"><span class="num">03</span> Carreras</button>
+      <button class="tab-btn" data-view="calendario"><span class="num">03</span> Calendario</button>
       <button class="tab-btn" data-view="clasificacion"><span class="num">04</span> Clasificación</button>
       <button class="tab-btn" data-view="historial"><span class="num">05</span> Historial</button>
     </nav>
@@ -312,24 +370,14 @@
     <div id="listaPilotos"></div>
   </section>
 
-  <section class="view" id="view-carreras">
+  <section class="view" id="view-calendario">
     <div class="view-head">
       <div>
-        <h2>Carreras</h2>
-        <p>Bolsa de premios del campeonato y estado de cada gran premio</p>
+        <h2>Calendario</h2>
+        <p>Circuitos de la temporada · pulsa una ficha para ver los resultados</p>
       </div>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Carrera</th><th>Estado</th><th>P1</th><th>P2</th><th>P3</th>
-            <th>P4-P10</th><th>Pole</th><th>V. Rápida</th><th>Clean Racing</th>
-          </tr>
-        </thead>
-        <tbody id="tablaCarreras"></tbody>
-      </table>
-    </div>
+    <div class="calendario-grid" id="gridCalendario"></div>
   </section>
 
   <section class="view" id="view-clasificacion">
@@ -338,7 +386,6 @@
         <h2>Clasificación</h2>
         <p>Clasificación general del campeonato por piloto y carrera</p>
       </div>
-      <input class="search-input" id="searchClasificacion" placeholder="Buscar piloto o equipo…">
     </div>
     <div class="checkered-divider"></div>
     <div class="table-wrap">
@@ -350,6 +397,25 @@
           </tr>
         </thead>
         <tbody id="tablaClasificacion"></tbody>
+      </table>
+    </div>
+
+    <div class="view-head" style="margin-top:34px;">
+      <div>
+        <h2>Clasificación por Equipos</h2>
+        <p>Clasificación general del campeonato por equipos</p>
+      </div>
+    </div>
+    <div class="checkered-divider"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pos.</th><th>Pilotos</th><th>Equipo</th><th>Puntos</th>
+            <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Pen.</th>
+          </tr>
+        </thead>
+        <tbody id="tablaClasTeam"></tbody>
       </table>
     </div>
   </section>
@@ -366,8 +432,6 @@
       <button class="pill active" data-filter="TODOS">Todos</button>
       <button class="pill" data-filter="COMPRA">Compras</button>
       <button class="pill" data-filter="VENTA">Ventas</button>
-      <button class="pill" data-filter="PREMIO_CARRERA">Premios</button>
-      <button class="pill" data-filter="BONO">Bonos</button>
     </div>
     <div class="table-wrap">
       <table>
@@ -413,20 +477,52 @@
   </div>
 </div>
 
+<div class="overlay" id="modalResultados">
+  <div class="modal" style="max-width:1300px;width:95%;">
+    <h3 id="resultadosTitulo">Resultados</h3>
+    <p class="sub" id="resultadosSub"></p>
+    <div class="table-wrap" style="max-height:70vh;">
+      <table>
+        <thead>
+          <tr>
+            <th>Pos.</th><th>Clase</th><th>Piloto</th><th>Lic.</th><th>Equipo</th>
+            <th>Marca</th><th>Espec.</th><th>Vueltas</th><th>Tiempo</th><th>Mejor V.</th><th>Pits</th>
+          </tr>
+        </thead>
+        <tbody id="tablaResultados"></tbody>
+      </table>
+    </div>
+    <div class="modal-actions">
+      <button class="action ghost" onclick="cerrarModal('modalResultados')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbylwH5CIHPLeC7UjXFsi_IHs-4ERRKSZbOHhonohq4fstkXNNChpovaYbB8GYdStNfUoA/exec';
+// Mantener el uso de fetch vía Apps Script macro
+const API_URL = 'https://script.google.com/macros/s/AKfycbwr_24kFfM88f-ASTomva4MxtDZKu_D3bRd-fqz5hq_65_bIJ3SAOvMou5cYndoB2oLNA/exec';
 
-let DB = { pilotos: [], coches: [], carreras: [], clasificacion: [], historial: [] };
+let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
 let cocheFilter = 'todos';
 let cocheCategoriaFilter = 'todas';
 let historialFilter = 'TODOS';
 let coches_query = '';
 let historial_query = '';
-let clasificacion_query = '';
 let cocheSeleccionadoId = null;
 let ventaContext = null;
+
+// Obtener valor robusto ignorando mayúsculas y acentos
+function normKey_(s){
+  return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
+}
+function getVal(obj, keyBase) {
+  if (!obj) return '';
+  const target = normKey_(keyBase);
+  const key = Object.keys(obj).find(k => normKey_(k) === target);
+  return key ? obj[key] : '';
+}
 
 async function apiGet(){
   const res = await fetch(API_URL);
@@ -469,8 +565,9 @@ async function cargarTodo(){
     poblarCategorias();
     renderCoches();
     renderPilotos();
-    renderCarreras();
+    renderCalendario();
     renderClasificacion();
+    renderClasTeam();
     renderHistorial();
   }catch(err){
     toast('No se pudieron cargar los datos: ' + err.message, 'err');
@@ -487,11 +584,12 @@ function poblarCategorias(){
 }
 
 function esCocheDeStock(c){
-  return c.Stock !== undefined && c.Stock !== null && c.Stock !== '';
+  const stock = getVal(c, 'Stock');
+  return stock !== undefined && stock !== null && stock !== '';
 }
 function cocheDisponible(c){
-  if(esCocheDeStock(c)) return Number(c.Stock) > 0;
-  return String(c.Propietario_ID).trim() === 'CONCESIONARIO';
+  if(esCocheDeStock(c)) return Number(getVal(c, 'Stock')) > 0;
+  return String(getVal(c, 'Propietario_ID') || '').trim().toUpperCase() === 'CONCESIONARIO';
 }
 function unidadesPropias(idPiloto, idCoche){
   const marca = '(' + idCoche + ')';
@@ -536,12 +634,12 @@ function renderCoches(){
     const disponible = cocheDisponible(c);
     let ownerLine;
     if(stockCar){
-      const stockActual = Number(c.Stock) || 0;
+      const stockActual = Number(getVal(c, 'Stock')) || 0;
       ownerLine = disponible
         ? ('Disponible en concesionario · Stock: ' + stockActual)
         : 'Agotado en concesionario';
     } else {
-      ownerLine = disponible ? 'Disponible en concesionario' : ('Propiedad de ' + nombrePiloto(c.Propietario_ID));
+      ownerLine = disponible ? 'Disponible en concesionario' : ('Propiedad de ' + nombrePiloto(getVal(c, 'Propietario_ID')));
     }
     const ownerClass = disponible ? 'free' : (stockCar ? 'sold-out' : '');
     const precioCompra = Number(c.Precio_Compra_OC ?? c.Precio_Compra_EC ?? 0);
@@ -667,7 +765,7 @@ document.querySelectorAll('.overlay').forEach(ov=>{
 function cochesDelPiloto(idPiloto){
   if (!Array.isArray(DB.coches)) return [];
   const unicos = DB.coches
-    .filter(c => !esCocheDeStock(c) && String(c.Propietario_ID) === String(idPiloto))
+    .filter(c => !esCocheDeStock(c) && String(getVal(c, 'Propietario_ID')) === String(idPiloto))
     .map(c => ({ coche: c, cantidad: 1 }));
 
   const deStock = DB.coches
@@ -694,7 +792,22 @@ function renderPilotos(){
     const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
     const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
     
-    const garajeHtml = misCoches.length
+    const campeonatos = getVal(p, 'Campeonatos') || 0;
+    const victorias = getVal(p, 'Victorias') || 0;
+    const podios = getVal(p, 'Podios') || 0;
+    const vueltaR = getVal(p, 'Vuelta R.') || 0;
+    const poles = getVal(p, 'Poles') || 0;
+
+    const statsHtml = `
+      <div class="pilot-stats-mini">
+        <div class="stat-box"><span class="emoji">👑</span><span class="val">${campeonatos}</span><span class="lbl">Camp.</span></div>
+        <div class="stat-box"><span class="emoji">🏆</span><span class="val">${victorias}</span><span class="lbl">Victorias</span></div>
+        <div class="stat-box"><span class="emoji">🥉</span><span class="val">${podios}</span><span class="lbl">Podios</span></div>
+        <div class="stat-box"><span class="emoji">⚡</span><span class="val">${vueltaR}</span><span class="lbl">Vuelta R.</span></div>
+        <div class="stat-box"><span class="emoji">🎯</span><span class="val">${poles}</span><span class="lbl">Poles</span></div>
+      </div>`;
+
+    const garajeHtml = statsHtml + (misCoches.length
       ? misCoches.map(({coche:c, cantidad}) => {
         const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
         return `
@@ -712,7 +825,7 @@ function renderPilotos(){
           </div>
         </div>`;
       }).join('')
-      : '<div class="empty">Este piloto no tiene coches en su garaje.</div>';
+      : '<div class="empty">Este piloto no tiene coches en su garaje.</div>');
 
     return `
       <div class="pilot-card" id="pc-${p.ID_Piloto}">
@@ -737,48 +850,99 @@ function togglePiloto(id){
   document.getElementById('pc-' + id).classList.toggle('open');
 }
 
-function renderCarreras(){
-  const tbody = document.getElementById('tablaCarreras');
-  if(!Array.isArray(DB.carreras) || DB.carreras.length === 0){
-    tbody.innerHTML = '<tr><td colspan="9" style="color:var(--text-dim);">Sin carreras configuradas.</td></tr>';
+function renderCalendario(){
+  const grid = document.getElementById('gridCalendario');
+  if(!Array.isArray(DB.calendario) || DB.calendario.length === 0){
+    grid.innerHTML = '<div class="empty-state">Todavía no hay carreras programadas en el calendario.</div>';
     return;
   }
-  tbody.innerHTML = DB.carreras.map(c => `
-    <tr>
-      <td>${c.Nombre_Carrera || ''}</td>
-      <td>${c.Estado || ''}</td>
-      <td class="amount">${c.Posicion_1_Premio || 0}</td>
-      <td class="amount">${c.Posicion_2_Premio || 0}</td>
-      <td class="amount">${c.Posicion_3_Premio || 0}</td>
-      <td class="amount">${c.Posicion_4_10_Premio || 0}</td>
-      <td class="amount">${c.Pole_Bonus || 0}</td>
-      <td class="amount">${c.Vuelta_Rapida_Bonus || 0}</td>
-      <td class="amount">${c.Clean_Racing_Bonus || 0}</td>
-    </tr>`).join('');
+  grid.innerHTML = DB.calendario.map(item=>{
+    const ronda = getVal(item, 'Ronda');
+    const circuito = getVal(item, 'Circuito');
+    const fecha = getVal(item, 'Fecha');
+    const img = getVal(item, 'Img');
+    return `
+      <div class="circuit-tile">
+        <div class="photo-big" style="background-image:url('${img || ''}')" onclick="abrirModalResultados('${ronda}')">
+          <div class="cat-tag">Round ${ronda || ''}</div>
+          <div class="info">
+            <p class="name">${circuito || ''}</p>
+            <p class="date">${fecha ? 'Fecha: ' + fecha : ''}</p>
+          </div>
+        </div>
+        <div class="podio-box">
+          <h4>🏆 Podio</h4>
+          ${renderPodioHtml(ronda)}
+        </div>
+      </div>`;
+  }).join('');
 }
 
-/* ==========================================================
-   CLASIFICACIÓN GENERAL (Con soporte para Logos/Imágenes)
-   ========================================================== */
-function getVal(obj, keyBase) {
-  if (!obj) return '';
-  const key = Object.keys(obj).find(k => k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === keyBase.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim());
-  return key ? obj[key] : '';
+function renderPodioHtml(ronda){
+  const key = 'r' + ronda;
+  const resultados = Array.isArray(DB[key]) ? DB[key] : [];
+  const medallas = { 1: '🥇', 2: '🥈', 3: '🥉' };
+
+  const podio = [1, 2, 3]
+    .map(pos => ({ pos, row: resultados.find(r => String(getVal(r, 'Posicion')) === String(pos)) }))
+    .filter(x => x.row);
+
+  if(podio.length === 0){
+    return '<div class="podio-empty">Todavía no hay resultados para esta carrera.</div>';
+  }
+
+  return podio.map(({ pos, row }) => `
+    <div class="podio-row">
+      <span class="medal">${medallas[pos] || ''}</span>
+      <span class="pos-name">${getVal(row, 'Piloto') || ''}</span>
+    </div>`).join('');
+}
+
+function abrirModalResultados(ronda){
+  const item = (DB.calendario || []).find(c => String(getVal(c, 'Ronda')) === String(ronda));
+  const circuito = item ? getVal(item, 'Circuito') : '';
+  const fecha = item ? getVal(item, 'Fecha') : '';
+
+  document.getElementById('resultadosTitulo').textContent = 'Resultados · Round ' + ronda + (circuito ? ' — ' + circuito : '');
+  document.getElementById('resultadosSub').textContent = fecha ? ('Fecha: ' + fecha) : '';
+
+  const tbody = document.getElementById('tablaResultados');
+  const key = 'r' + ronda;
+  const resultados = Array.isArray(DB[key]) ? DB[key] : [];
+
+  if(resultados.length === 0){
+    tbody.innerHTML = '<tr><td colspan="11" style="color:var(--text-dim);">Todavía no hay resultados para esta carrera.</td></tr>';
+  } else {
+    tbody.innerHTML = resultados.map((r, i) => {
+      // Cálculo de pos-badge dinámico
+      const pos = getVal(r, 'Posicion') || (i+1);
+      const posNum = Number(pos);
+      const posBadgeClass = posNum === 1 ? 'p1' : (posNum === 2 ? 'p2' : (posNum === 3 ? 'p3' : ''));
+
+      return `
+      <tr>
+        <td><span class="pos-badge ${posBadgeClass}">${pos}</span></td>
+        <td><span class="class-tag">${getVal(r, 'Clase')}</span></td>
+        <td>${getVal(r, 'Piloto')}</td>
+        <td>${getVal(r, 'Lic.')}</td>
+        <td>${getVal(r, 'Equipo')}</td>
+        <td>${getVal(r, 'Marca')}</td>
+        <td>${getVal(r, 'Espec.')}</td>
+        <td>${getVal(r, 'Vueltas')}</td>
+        <td class="mono">${getVal(r, 'Tiempo')}</td>
+        <td class="mono">${getVal(r, 'Mejor V.')}</td>
+        <td>${getVal(r, 'Pits')}</td>
+      </tr>`
+    }).join('');
+  }
+
+  document.getElementById('modalResultados').classList.add('show');
 }
 
 function renderClasificacion(){
   const tbody = document.getElementById('tablaClasificacion');
   if (!Array.isArray(DB.clasificacion)) return;
   let list = DB.clasificacion.slice();
-
-  if(clasificacion_query.trim()){
-    const q = clasificacion_query.trim().toLowerCase();
-    list = list.filter(c =>
-      String(getVal(c, 'Piloto')).toLowerCase().includes(q) ||
-      String(getVal(c, 'Equipo')).toLowerCase().includes(q) ||
-      String(getVal(c, 'Marca')).toLowerCase().includes(q)
-    );
-  }
 
   list.sort((a,b)=>{
     const pa = Number(getVal(a, 'Posicion')), pb = Number(getVal(b, 'Posicion'));
@@ -796,11 +960,9 @@ function renderClasificacion(){
     const posBadgeClass = i===0 ? 'p1' : (i===1 ? 'p2' : (i===2 ? 'p3' : ''));
     const pen = getVal(c, 'Pen.');
     
-    // Proceso de la columna Marca (Texto o Imagen)
     const valMarca = String(getVal(c, 'Marca') || '').trim();
     let marcaHtml = valMarca;
 
-    // Detectar si el valor de la celda es una URL de imagen
     if (valMarca.startsWith('http://') || valMarca.startsWith('https://') || valMarca.startsWith('data:image')) {
       marcaHtml = `<img src="${valMarca}" alt="Marca" style="height:24px; max-width:60px; object-fit:contain; vertical-align:middle;">`;
     }
@@ -824,10 +986,41 @@ function renderClasificacion(){
   }).join('');
 }
 
-document.getElementById('searchClasificacion').addEventListener('input', e=>{
-  clasificacion_query = e.target.value;
-  renderClasificacion();
-});
+function renderClasTeam(){
+  const tbody = document.getElementById('tablaClasTeam');
+  if (!Array.isArray(DB.clasteam)) return;
+  let list = DB.clasteam.slice();
+
+  list.sort((a,b)=>{
+    const pa = Number(getVal(a, 'Posicion')), pb = Number(getVal(b, 'Posicion'));
+    if(!isNaN(pa) && !isNaN(pb) && pa !== 0 && pb !== 0) return pa - pb;
+    return (Number(getVal(b, 'Puntos')) || 0) - (Number(getVal(a, 'Puntos')) || 0);
+  });
+
+  if(list.length === 0){
+    tbody.innerHTML = '<tr><td colspan="9" style="color:var(--text-dim); text-align:center;">Todavía no hay clasificación por equipos registrada.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map((c,i)=>{
+    const pos = getVal(c, 'Posicion') || (i+1);
+    const posBadgeClass = i===0 ? 'p1' : (i===1 ? 'p2' : (i===2 ? 'p3' : ''));
+    const pen = getVal(c, 'Pen.');
+
+    return `
+    <tr>
+      <td><span class="pos-badge ${posBadgeClass}">${pos}</span></td>
+      <td>${getVal(c, 'Pilotos')}</td>
+      <td>${getVal(c, 'Equipo')}</td>
+      <td class="pts-white">${getVal(c, 'Puntos') || 0}</td>
+      <td class="amount">${getVal(c, 'R1')}</td>
+      <td class="amount">${getVal(c, 'R2')}</td>
+      <td class="amount">${getVal(c, 'R3')}</td>
+      <td class="amount">${getVal(c, 'R4')}</td>
+      <td class="amount ${Number(pen) < 0 ? 'neg' : ''}">${pen || 0}</td>
+    </tr>`;
+  }).join('');
+}
 
 function renderHistorial(){
   const tbody = document.getElementById('tablaHistorial');
@@ -847,7 +1040,7 @@ function renderHistorial(){
 
   tbody.innerHTML = list.map(h=>{
     const monto = Number(h.Monto_OC ?? h.Monto_EC ?? 0);
-    const cls = monto >= 0 ? 'pos' : 'neg';
+    const cls = monto >= 0 ? 'pos' : 'neg'; // .pos -> verde, .neg -> rojo
     const signo = monto >= 0 ? '+' : '';
     return `
       <tr>
