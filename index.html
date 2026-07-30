@@ -49,14 +49,9 @@
     max-width:1500px;margin:0 auto;padding:14px 20px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
   }
-  .brand{display:flex;align-items:center;gap:10px;}
-  .brand .badge{
-    width:38px;height:38px;border-radius:8px;
-    background:linear-gradient(135deg,var(--cyan),#00A88F);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Teko',sans-serif;font-size:22px;font-weight:700;color:#04211D;
-    box-shadow:0 0 0 2px rgba(0,229,199,0.25);
-  }
+  .brand{display:flex;align-items:center;gap:14px;}
+  .brand-logo{height:42px;width:auto;max-width:120px;object-fit:contain;display:block;flex:none;}
+  .brand-text{margin-left:6px;}
   .brand h1{font-size:26px;margin:0;line-height:1;}
   .brand span{display:block;font-size:11px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;font-family:'Inter',sans-serif;}
 
@@ -127,11 +122,15 @@
     display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
     font-size:12px;font-weight:700;z-index:2;
   }
-  .car-card .cat-tag{
+  .car-card .cat-tag, .ficha-grande .cat-tag{
     position:absolute;top:10px;right:10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;
-    background:rgba(0,0,0,0.55);border:1px solid var(--hairline);color:var(--text-dim);
-    padding:3px 8px;border-radius:5px;z-index:2;
+    background:#000000;border:1px solid var(--hairline);color:var(--text-dim);
+    padding:3px 8px;border-radius:5px;z-index:2;font-weight:700;
   }
+  /* Colores por categoría (preparado para Oro/Plata/Bronce futuros) */
+  .car-card .cat-tag.cat-bronce, .ficha-grande .cat-tag.cat-bronce{color:#CD7F32;}
+  .car-card .cat-tag.cat-oro, .ficha-grande .cat-tag.cat-oro{color:#FFD700;}
+  .car-card .cat-tag.cat-plata, .ficha-grande .cat-tag.cat-plata{color:#C0C0C0;}
   .car-card .body{padding:14px 16px 16px;}
   .car-card .name{font-family:'Teko',sans-serif;font-size:22px;line-height:1.1;margin:0 0 2px;}
   .car-card .owner{font-size:12px;color:var(--text-dim);margin:0 0 12px;}
@@ -180,7 +179,7 @@
     display:grid;
     grid-template-columns:repeat(2, minmax(0, 1fr));
     gap:22px;
-    width:60%;
+    width:80%;
   }
   .circuit-tile{
     background:var(--panel);
@@ -230,9 +229,6 @@
   .podio-empty{color:var(--text-dim);font-size:13px;}
   
   @media (max-width:760px){ 
-    .calendario-grid{ width:80%; }
-  }
-  @media (max-width:480px){ 
     .calendario-grid{ width:100%; }
   }
 
@@ -304,6 +300,42 @@
   }
   .modal h3{margin:0 0 4px;font-size:24px;}
   .modal p.sub{color:var(--text-dim);font-size:13px;margin:0 0 18px;}
+
+  .modal.modal-ficha{max-width:460px;max-height:90vh;overflow-y:auto;}
+  .ficha-grande{
+    position:relative;height:210px;border-radius:10px;overflow:hidden;
+    margin:-24px -24px 18px;background:var(--panel-2) center/cover no-repeat;
+  }
+  .ficha-grande::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 35%, rgba(11,13,16,0.92) 100%);
+  }
+  .ficha-grande .stripe{
+    position:absolute;inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 10px, transparent 10px 26px);
+    pointer-events:none;
+  }
+  .ficha-grande .number{
+    position:absolute;top:12px;left:12px;width:38px;height:38px;border-radius:50%;
+    background:var(--asphalt);border:2px solid var(--cyan);color:var(--cyan);
+    display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
+    font-size:13px;font-weight:700;z-index:2;
+  }
+  .ficha-grande .ficha-info{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;}
+  .ficha-grande .ficha-info .name{font-family:'Teko',sans-serif;font-size:30px;margin:0;line-height:1.1;}
+
+  .specs-wrap{margin-bottom:18px;}
+  .specs-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .specs-table td{padding:7px 4px;border-bottom:1px solid var(--hairline);}
+  .specs-table td.spec-label{color:var(--text-dim);text-transform:uppercase;font-size:10.5px;letter-spacing:.5px;width:50%;}
+  .specs-table td.spec-value{color:var(--text);font-family:'JetBrains Mono',monospace;text-align:right;}
+
+  .lic-tag{
+    display:inline-block;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+    background:var(--panel-2);border:1px solid var(--hairline);color:var(--amber);
+    padding:2px 7px;border-radius:5px;margin-left:8px;vertical-align:middle;
+    font-family:'Inter',sans-serif;font-weight:700;
+  }
   .field{margin-bottom:14px;}
   .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
   .field select, .field input{
@@ -345,8 +377,8 @@
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <div class="badge">RO</div>
-      <div>
+      <img class="brand-logo" src="https://raw.githubusercontent.com/race-online/es/refs/heads/main/logos/logopng.webp" alt="Race Online Shop">
+      <div class="brand-text">
         <h1>Race Online Shop</h1>
         <span>Assetto Corsa Evo Academy · Economía de comunidad</span>
       </div>
@@ -379,7 +411,7 @@
     <div class="pillbar" id="filterCoches">
       <button class="pill active" data-filter="todos">Todos</button>
       <button class="pill" data-filter="disponibles">En concesionario</button>
-      <button class="pill" data-filter="agotados">Agotados / comprados</button>
+      <button class="pill" data-filter="agotados">Agotados</button>
     </div>
     <div class="grid" id="gridCoches"></div>
   </section>
@@ -468,7 +500,11 @@
 </main>
 
 <div class="overlay" id="modalComprar">
-  <div class="modal">
+  <div class="modal modal-ficha">
+    <div class="ficha-grande" id="fichaComprarFoto"></div>
+    <div class="specs-wrap">
+      <table class="specs-table"><tbody id="tablaEspecsComprar"></tbody></table>
+    </div>
     <h3 id="comprarTitulo">Comprar coche</h3>
     <p class="sub" id="comprarSub"></p>
     <div class="field">
@@ -487,7 +523,11 @@
 </div>
 
 <div class="overlay" id="modalVender">
-  <div class="modal">
+  <div class="modal modal-ficha">
+    <div class="ficha-grande" id="fichaVenderFoto"></div>
+    <div class="specs-wrap">
+      <table class="specs-table"><tbody id="tablaEspecsVender"></tbody></table>
+    </div>
     <h3 id="venderTitulo">Vender coche</h3>
     <p class="sub" id="venderSub"></p>
     <div class="field">
@@ -649,6 +689,52 @@ function unidadesPropias(idPiloto, idCoche){
   return total;
 }
 
+// Clase CSS según categoría (Bronce / Plata / Oro, preparado para futuras categorías)
+function catTagClass(categoria){
+  const c = String(categoria || '').toLowerCase();
+  if(c.includes('oro')) return 'cat-oro';
+  if(c.includes('plata')) return 'cat-plata';
+  if(c.includes('bronce')) return 'cat-bronce';
+  return '';
+}
+
+// HTML del interior de la ficha grande (foto ya se aplica como background aparte)
+function fichaGrandeHtml(c){
+  const cat = c.Categoria || '';
+  return `
+    <div class="stripe"></div>
+    <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
+    <div class="cat-tag ${catTagClass(cat)}">${cat}</div>
+    <div class="ficha-info"><p class="name">${c.Nombre_Coche || ''}</p></div>
+  `;
+}
+
+// Tabla de especificaciones técnicas (columnas I-V de la hoja Coches)
+function especificacionesHtml(c){
+  const specs = [
+    ['Disposición', getVal(c, 'Disposicion')],
+    ['Motor', getVal(c, 'Motor')],
+    ['Carrocería', getVal(c, 'Carroceria')],
+    ['Año', getVal(c, 'Año')],
+    ['Potencia', getVal(c, 'Potencia')],
+    ['Par Motor', getVal(c, 'Par motor')],
+    ['Cilindrada', getVal(c, 'Cilindrada')],
+    ['Cilindros', getVal(c, 'Cilindros')],
+    ['Peso', getVal(c, 'Peso')],
+    ['Velocidad Máxima', getVal(c, 'Velocidad')],
+    ['0-100 km/h', getVal(c, '0-100')],
+    ['Marchas', getVal(c, 'Marchas')],
+    ['Depósito', getVal(c, 'Deposito')]
+  ].filter(([, v]) => v !== '' && v !== undefined && v !== null);
+
+  if(specs.length === 0){
+    return '<tr><td colspan="2" style="color:var(--text-dim);padding:8px 4px;">Sin especificaciones disponibles.</td></tr>';
+  }
+
+  return specs.map(([label, val]) => `
+    <tr><td class="spec-label">${label}</td><td class="spec-value">${val}</td></tr>`).join('');
+}
+
 function nombrePiloto(id){
   if (!Array.isArray(DB.pilotos)) return id;
   const p = DB.pilotos.find(p => String(p.ID_Piloto) === String(id));
@@ -689,11 +775,11 @@ function renderCoches(){
     const precioCompra = Number(c.Precio_Compra_OC ?? c.Precio_Compra_EC ?? 0);
 
     return `
-      <div class="car-card">
+      <div class="car-card" ${disponible ? `onclick="abrirModalComprar('${c.ID_Coche}')" style="cursor:pointer;"` : ''}>
         <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
           <div class="stripe"></div>
           <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
-          <div class="cat-tag">${c.Categoria || ''}</div>
+          <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
         </div>
         <div class="body">
           <p class="name">${c.Nombre_Coche || ''}</p>
@@ -703,7 +789,7 @@ function renderCoches(){
             <span class="val">${precioCompra.toLocaleString()} OC</span>
           </div>
           ${disponible
-            ? `<button class="action buy" onclick="abrirModalComprar('${c.ID_Coche}')">Comprar coche</button>`
+            ? `<button class="action buy" onclick="event.stopPropagation(); abrirModalComprar('${c.ID_Coche}')">Comprar coche</button>`
             : `<button class="action ghost" disabled>${stockCar ? 'Sin stock' : 'En garaje de piloto'}</button>`
           }
         </div>
@@ -733,6 +819,12 @@ function abrirModalComprar(idCoche){
   const coche = DB.coches.find(c => String(c.ID_Coche) === String(idCoche));
   if (!coche) return;
   const precioCompra = Number(coche.Precio_Compra_OC ?? coche.Precio_Compra_EC ?? 0);
+
+  const fotoComprar = document.getElementById('fichaComprarFoto');
+  fotoComprar.style.backgroundImage = "url('" + (coche.Imagen_URL || '') + "')";
+  fotoComprar.innerHTML = fichaGrandeHtml(coche);
+  document.getElementById('tablaEspecsComprar').innerHTML = especificacionesHtml(coche);
+
   document.getElementById('comprarTitulo').textContent = 'Comprar ' + coche.Nombre_Coche;
   document.getElementById('comprarSub').textContent = 'Precio: ' + precioCompra.toLocaleString() + ' OC';
   const sel = document.getElementById('comprarPiloto');
@@ -771,6 +863,12 @@ function abrirModalVender(idCoche, idPiloto){
   const coche = DB.coches.find(c => String(c.ID_Coche) === String(idCoche));
   if (!coche) return;
   const precioVenta = Number(coche.Precio_Venta_OC ?? coche.Precio_Venta_EC ?? 0);
+
+  const fotoVender = document.getElementById('fichaVenderFoto');
+  fotoVender.style.backgroundImage = "url('" + (coche.Imagen_URL || '') + "')";
+  fotoVender.innerHTML = fichaGrandeHtml(coche);
+  document.getElementById('tablaEspecsVender').innerHTML = especificacionesHtml(coche);
+
   document.getElementById('venderTitulo').textContent = 'Vender ' + coche.Nombre_Coche;
   document.getElementById('venderSub').textContent = 'Recibirás ' + precioVenta.toLocaleString() + ' OC del concesionario';
   document.getElementById('venderPin').value = '';
@@ -841,6 +939,7 @@ function renderPilotos(){
     const podios = getVal(p, 'Podios') || 0;
     const vueltaR = getVal(p, 'Vuelta R.') || 0;
     const poles = getVal(p, 'Poles') || 0;
+    const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
 
     const statsHtml = `
       <div class="pilot-stats-mini">
@@ -855,11 +954,11 @@ function renderPilotos(){
       ? misCoches.map(({coche:c, cantidad}) => {
         const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
         return `
-        <div class="car-card">
+        <div class="car-card" onclick="abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')" style="cursor:pointer;">
           <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
             <div class="stripe"></div>
             <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
-            <div class="cat-tag">${c.Categoria || ''}</div>
+            <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
             ${cantidad > 1 ? `<div class="qty-badge">x${cantidad}</div>` : ''}
           </div>
           <div class="body">
@@ -876,7 +975,7 @@ function renderPilotos(){
         <div class="pilot-head" onclick="togglePiloto('${p.ID_Piloto}')">
           <div class="pilot-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
           <div class="pilot-info">
-            <p class="name">${p.Nombre_Piloto || ''}</p>
+            <p class="name">${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
             <div class="pilot-stats">
               <span class="stat oc">Saldo: <b>${saldo.toLocaleString()} OC</b></span>
               <span class="stat">Garaje: <b>${totalUnidades}</b> coches</span>
