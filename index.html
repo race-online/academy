@@ -49,9 +49,9 @@
     max-width:1500px;margin:0 auto;padding:14px 20px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
   }
-  .brand{display:flex;align-items:center;gap:14px;}
-  .brand-logo{height:42px;width:auto;max-width:120px;object-fit:contain;display:block;flex:none;}
-  .brand-text{margin-left:6px;}
+  .brand{display:flex;align-items:center;gap:20px;}
+  .brand-logo{height:100px;width:auto;object-fit:contain;display:block;flex:none;}
+  .brand-text{margin-left:12px;}
   .brand h1{font-size:26px;margin:0;line-height:1;}
   .brand span{display:block;font-size:11px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;font-family:'Inter',sans-serif;}
 
@@ -103,39 +103,42 @@
     border-radius:var(--radius);overflow:hidden;transition:border-color .15s ease,transform .15s ease;
   }
   .car-card:hover{border-color:#39404C;transform:translateY(-2px);}
-  .car-card .photo{
+  .car-card .photo, .car-card-mini .photo{
     position:relative;height:140px;background:var(--panel-2);
     background-size:cover;background-position:center;
   }
-  .car-card .photo::after{
+  .car-card .photo::after, .car-card-mini .photo::after{
     content:'';position:absolute;inset:0;
     background:linear-gradient(180deg,transparent 40%, rgba(11,13,16,0.9) 100%);
   }
-  .car-card .stripe{
+  .car-card .stripe, .car-card-mini .stripe{
     position:absolute;top:0;left:0;width:100%;height:100%;
     background:repeating-linear-gradient(115deg, rgba(255,255,255,0.035) 0 10px, transparent 10px 26px);
     pointer-events:none;
   }
-  .car-card .number{
+  .car-card .number, .car-card-mini .number{
     position:absolute;top:10px;left:10px;width:34px;height:34px;border-radius:50%;
     background:var(--asphalt);border:2px solid var(--cyan);color:var(--cyan);
     display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;
     font-size:12px;font-weight:700;z-index:2;
   }
-  .car-card .cat-tag, .ficha-grande .cat-tag{
+  .car-card .cat-tag, .ficha-grande .cat-tag, .car-card-mini .cat-tag{
     position:absolute;top:10px;right:10px;font-size:10px;letter-spacing:1px;text-transform:uppercase;
     background:#000000;border:1px solid var(--hairline);color:var(--text-dim);
     padding:3px 8px;border-radius:5px;z-index:2;font-weight:700;
   }
   /* Colores por categoría (preparado para Oro/Plata/Bronce futuros) */
-  .car-card .cat-tag.cat-bronce, .ficha-grande .cat-tag.cat-bronce{color:#CD7F32;}
-  .car-card .cat-tag.cat-oro, .ficha-grande .cat-tag.cat-oro{color:#FFD700;}
-  .car-card .cat-tag.cat-plata, .ficha-grande .cat-tag.cat-plata{color:#C0C0C0;}
-  .car-card .body{padding:14px 16px 16px;}
-  .car-card .name{font-family:'Teko',sans-serif;font-size:22px;line-height:1.1;margin:0 0 2px;}
-  .car-card .owner{font-size:12px;color:var(--text-dim);margin:0 0 12px;}
-  .car-card .owner.free{color:var(--cyan);}
-  .car-card .owner.sold-out{color:var(--danger);}
+  .car-card .cat-tag.cat-bronce, .ficha-grande .cat-tag.cat-bronce, .car-card-mini .cat-tag.cat-bronce{color:#CD7F32;}
+  .car-card .cat-tag.cat-oro, .ficha-grande .cat-tag.cat-oro, .car-card-mini .cat-tag.cat-oro{color:#FFD700;}
+  .car-card .cat-tag.cat-plata, .ficha-grande .cat-tag.cat-plata, .car-card-mini .cat-tag.cat-plata{color:#C0C0C0;}
+  .car-card .body, .car-card-mini .body{padding:14px 16px 16px;}
+  .car-card .name, .car-card-mini .name{font-family:'Teko',sans-serif;font-size:22px;line-height:1.1;margin:0 0 2px;}
+  .car-card .owner, .car-card-mini .owner{font-size:12px;color:var(--text-dim);margin:0 0 12px;}
+  .car-card .owner.free, .car-card-mini .owner.free{color:var(--cyan);}
+  .car-card .owner.sold-out, .car-card-mini .owner.sold-out{color:var(--danger);}
+  /* Ficha de coche principal dentro de la tarjeta de piloto (mismo look que .car-card, sin duplicar borde) */
+  .car-card-mini{position:relative;}
+  .car-card-mini .owner{margin-bottom:0;}
   .price-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
   .price-row .val{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:var(--amber);}
   .price-row .label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
@@ -173,6 +176,62 @@
     background:rgba(0,0,0,0.6);border:1px solid var(--hairline);color:var(--text);
     font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;
   }
+
+  /* Pilotos: rejilla de fichas rectangulares tipo car-card (~350px) */
+  .pilotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
+  .pilot-card-v2{
+    position:relative;background:var(--panel);border:1px solid var(--hairline);
+    border-radius:var(--radius);overflow:hidden;cursor:pointer;
+    transition:border-color .15s ease,transform .15s ease;
+  }
+  .pilot-card-v2:hover{border-color:#39404C;transform:translateY(-2px);}
+  .pilot-topbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--hairline);}
+  .pilot-avatar-sm{
+    width:44px;height:44px;border-radius:50%;background:var(--panel-2) center/cover;
+    border:1px solid var(--hairline);flex:none;
+  }
+  .pilot-topbar-info{flex:1;min-width:0;}
+  .pilot-topbar-info .name{font-family:'Teko',sans-serif;font-size:20px;margin:0 0 3px;line-height:1.1;}
+  .pilot-topbar-stats{display:flex;gap:14px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);}
+  .pilot-topbar-stats b{color:var(--text);}
+  .pilot-card-v2 .empty-mini{padding:20px 16px;color:var(--text-dim);font-size:13px;}
+
+  .principal-tag{
+    display:inline-block;margin-top:6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+    background:var(--amber-dim);color:var(--amber);border:1px solid rgba(255,176,32,.35);
+    padding:3px 8px;border-radius:5px;font-weight:700;
+  }
+
+  /* Modal ficha de piloto (pestaña Pilotos) */
+  .pilot-modal-head{display:flex;align-items:center;gap:18px;margin-bottom:14px;}
+  .pilot-avatar-lg{
+    width:78px;height:78px;border-radius:50%;background:var(--panel-2) center/cover;
+    border:2px solid var(--hairline);flex:none;
+  }
+
+  /* Mi Garaje */
+  .mi-garaje-ficha{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:20px;}
+  .mi-garaje-avatar{
+    width:110px;height:110px;border-radius:50%;background:var(--panel-2) center/cover;
+    border:2px solid var(--hairline);flex:none;
+  }
+  .mi-garaje-info .name{font-family:'Teko',sans-serif;font-size:32px;margin:0 0 10px;line-height:1;}
+  .mi-garaje-desc{display:flex;flex-direction:column;gap:6px;}
+  .mi-garaje-desc .row{display:flex;gap:10px;align-items:baseline;}
+  .mi-garaje-desc .lbl{color:var(--text-dim);text-transform:uppercase;font-size:11px;letter-spacing:.5px;min-width:90px;}
+  .mi-garaje-desc .val{font-family:'JetBrains Mono',monospace;color:var(--text);font-weight:600;font-size:14px;}
+  .mi-garaje-seccion h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:0 0 14px;font-family:'Inter',sans-serif;font-weight:700;}
+  .coche-principal-bar{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--panel);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;
+  }
+  .coche-principal-bar .lbl-principal{color:var(--text-dim);font-size:13.5px;white-space:nowrap;}
+  .coche-principal-bar select{flex:1;min-width:200px;max-width:none;}
+  .coche-principal-bar button{flex:none;width:auto;padding:10px 22px;}
+
+  .estado-mercado{margin-left:10px;}
+  .estado-mercado.abierto{background:var(--green-dim);color:var(--green);}
+  .estado-mercado.cerrado{background:var(--danger-dim);color:var(--danger);}
 
   /* Calendario: Grid 60% Desktop, 80% Mobile (2 por fila siempre) */
   .calendario-grid{
@@ -250,6 +309,17 @@
   .stat-box .val{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--amber);display:block;}
   .stat-box .lbl{font-size:10.5px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;}
 
+  /* Modal de ficha de piloto: las 5 estadísticas (incl. Poles) siempre en una sola línea */
+  #pilotoModalStatBoxes{
+    max-width:100%;
+    grid-template-columns:repeat(5, minmax(0,1fr));
+    gap:8px;
+  }
+  #pilotoModalStatBoxes .stat-box{padding:10px 4px;}
+  #pilotoModalStatBoxes .stat-box .emoji{font-size:18px;}
+  #pilotoModalStatBoxes .stat-box .val{font-size:16px;}
+  #pilotoModalStatBoxes .stat-box .lbl{font-size:9px;letter-spacing:.2px;}
+
   .checkered-divider{
     height:10px;border-radius:4px;margin:22px 0;
     background-image:
@@ -302,6 +372,13 @@
   .modal p.sub{color:var(--text-dim);font-size:13px;margin:0 0 18px;}
 
   .modal.modal-ficha{max-width:460px;max-height:90vh;overflow-y:auto;}
+  /* En desktop, las fichas de coche (concesionario y mi garaje) son más anchas
+     y las especificaciones se reparten en 2 columnas. En móvil se mantiene igual
+     (una sola columna, mismo ancho de siempre). */
+  @media (min-width:701px){
+    .modal.modal-ficha.modal-ficha-wide{max-width:660px;}
+    .specs-wrap-2col{display:grid;grid-template-columns:1fr 1fr;column-gap:28px;}
+  }
   .ficha-grande{
     position:relative;height:210px;border-radius:10px;overflow:hidden;
     margin:-24px -24px 18px;background:var(--panel-2) center/cover no-repeat;
@@ -325,6 +402,17 @@
   .ficha-grande .ficha-info .name{font-family:'Teko',sans-serif;font-size:30px;margin:0;line-height:1.1;}
 
   .specs-wrap{margin-bottom:18px;}
+  .specs-wrap-2col table{margin-bottom:0;}
+
+  /* Barra que muestra el saldo del piloto que ha iniciado sesión, sustituyendo
+     al desplegable de piloto y al PIN en las fichas de compra/venta. */
+  .saldo-piloto-bar{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+    background:var(--panel-2);border:1px solid var(--hairline);border-radius:10px;
+    padding:12px 16px;margin-bottom:16px;
+  }
+  .saldo-piloto-bar .lbl-principal{color:var(--text-dim);font-size:13px;}
+  .saldo-piloto-bar .saldo-valor{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--amber);font-size:17px;}
   .specs-table{width:100%;border-collapse:collapse;font-size:13px;}
   .specs-table td{padding:7px 4px;border-bottom:1px solid var(--hairline);}
   .specs-table td.spec-label{color:var(--text-dim);text-transform:uppercase;font-size:10.5px;letter-spacing:.5px;width:50%;}
@@ -389,6 +477,7 @@
       <button class="tab-btn" data-view="calendario"><span class="num">03</span> Calendario</button>
       <button class="tab-btn" data-view="clasificacion"><span class="num">04</span> Clasificación</button>
       <button class="tab-btn" data-view="historial"><span class="num">05</span> Historial</button>
+      <button class="tab-btn" data-view="migaraje" id="tabMiGaraje" style="display:none;"><span class="num">06</span> Mi garaje</button>
     </nav>
   </div>
 </header>
@@ -399,7 +488,7 @@
     <div class="view-head">
       <div>
         <h2>Concesionario</h2>
-        <p>Catálogo de vehículos disponibles y garajes de la parrilla</p>
+        <p>Catálogo de vehículos disponibles y garajes de la parrilla <span id="estadoMercado" class="tag estado-mercado"></span></p>
       </div>
       <div class="filters-bar">
         <select class="select-input" id="filterCategoriaCoches">
@@ -420,10 +509,20 @@
     <div class="view-head">
       <div>
         <h2>Pilotos & Garajes</h2>
-        <p>Saldo actual y valor de garaje de cada piloto de la parrilla</p>
+        <p>Saldo actual y coche principal de cada piloto de la parrilla</p>
       </div>
     </div>
-    <div id="listaPilotos"></div>
+    <div class="pilotos-grid" id="listaPilotos"></div>
+  </section>
+
+  <section class="view" id="view-migaraje">
+    <div class="view-head">
+      <div>
+        <h2>Mi Garaje</h2>
+        <p>Tu ficha personal, tus coches y tu coche principal de campeonato</p>
+      </div>
+    </div>
+    <div id="miGarajeContenido"></div>
   </section>
 
   <section class="view" id="view-calendario">
@@ -500,40 +599,32 @@
 </main>
 
 <div class="overlay" id="modalComprar">
-  <div class="modal modal-ficha">
+  <div class="modal modal-ficha modal-ficha-wide">
     <div class="ficha-grande" id="fichaComprarFoto"></div>
-    <div class="specs-wrap">
-      <table class="specs-table"><tbody id="tablaEspecsComprar"></tbody></table>
+    <div class="specs-wrap specs-wrap-2col">
+      <table class="specs-table"><tbody id="tablaEspecsComprarIzq"></tbody></table>
+      <table class="specs-table"><tbody id="tablaEspecsComprarDer"></tbody></table>
     </div>
     <h3 id="comprarTitulo">Comprar coche</h3>
     <p class="sub" id="comprarSub"></p>
-    <div class="field">
-      <label>Selecciona tu piloto</label>
-      <select id="comprarPiloto"></select>
-    </div>
-    <div class="field">
-      <label>PIN de seguridad</label>
-      <input type="password" inputmode="numeric" maxlength="4" class="mono" id="comprarPin" placeholder="••••">
-    </div>
+    <div class="saldo-piloto-bar" id="compradorSaldoBar"></div>
     <div class="modal-actions">
-      <button class="action ghost" onclick="cerrarModal('modalComprar')">Cancelar</button>
+      <button class="action ghost" onclick="cerrarModal('modalComprar')">Cerrar</button>
       <button class="action buy" id="btnConfirmarCompra">Confirmar compra</button>
     </div>
   </div>
 </div>
 
 <div class="overlay" id="modalVender">
-  <div class="modal modal-ficha">
+  <div class="modal modal-ficha modal-ficha-wide">
     <div class="ficha-grande" id="fichaVenderFoto"></div>
-    <div class="specs-wrap">
-      <table class="specs-table"><tbody id="tablaEspecsVender"></tbody></table>
+    <div class="specs-wrap specs-wrap-2col">
+      <table class="specs-table"><tbody id="tablaEspecsVenderIzq"></tbody></table>
+      <table class="specs-table"><tbody id="tablaEspecsVenderDer"></tbody></table>
     </div>
     <h3 id="venderTitulo">Vender coche</h3>
     <p class="sub" id="venderSub"></p>
-    <div class="field">
-      <label>PIN de seguridad</label>
-      <input type="password" inputmode="numeric" maxlength="4" class="mono" id="venderPin" placeholder="••••">
-    </div>
+    <div class="saldo-piloto-bar" id="vendedorSaldoBar"></div>
     <div class="modal-actions">
       <button class="action ghost" onclick="cerrarModal('modalVender')">Cancelar</button>
       <button class="action sell" id="btnConfirmarVenta">Confirmar venta</button>
@@ -562,10 +653,48 @@
   </div>
 </div>
 
+<div class="overlay" id="modalLogin">
+  <div class="modal" style="max-width:380px;">
+    <h3>Bienvenido a Race Online</h3>
+    <p class="sub">Identifícate para acceder a tu garaje personal</p>
+    <div class="field">
+      <label>Selecciona tu piloto</label>
+      <select id="loginPiloto"></select>
+    </div>
+    <div class="field">
+      <label>PIN de seguridad</label>
+      <input type="password" inputmode="numeric" maxlength="4" class="mono" id="loginPin" placeholder="••••">
+    </div>
+    <div class="modal-actions">
+      <button class="action buy" id="btnLoginPiloto">Entrar</button>
+    </div>
+    <button class="action ghost" id="btnLoginInvitado" style="margin-top:10px;">Entrar como invitado</button>
+  </div>
+</div>
+
+<div class="overlay" id="modalPiloto">
+  <div class="modal" style="max-width:640px;width:95%;max-height:90vh;overflow-y:auto;">
+    <div class="pilot-modal-head">
+      <div class="pilot-avatar-lg" id="pilotoModalAvatar"></div>
+      <div style="flex:1;min-width:0;">
+        <p class="name" id="pilotoModalNombre" style="font-family:'Teko',sans-serif;font-size:26px;margin:0 0 8px;"></p>
+        <div class="pilot-stats" id="pilotoModalStats"></div>
+      </div>
+    </div>
+    <div class="pilot-stats-mini" id="pilotoModalStatBoxes"></div>
+    <div class="checkered-divider"></div>
+    <h4 style="margin:0 0 12px;font-size:13px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;font-family:'Inter',sans-serif;">Garaje</h4>
+    <div class="grid" id="pilotoModalGaraje"></div>
+    <div class="modal-actions">
+      <button class="action ghost" onclick="cerrarModal('modalPiloto')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwWx30KEUsjYxwSrt39DlYfC62ojZiEoeD4xyUO7Ff_rDC7cKVc9Y9f0eT9rFRSmrLXYA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzQT8CABMIhP4QK3ddAoZMbnQcJzuCv4il8qfw8PawCtq2Bq3pBWTLEWLiA51C4R0nTWA/exec';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
 let cocheFilter = 'todos';
@@ -575,6 +704,9 @@ let coches_query = '';
 let historial_query = '';
 let cocheSeleccionadoId = null;
 let ventaContext = null;
+let sesion = { tipo: null, idPiloto: null, pin: null }; // tipo: 'piloto' | 'invitado'
+let sesionIniciada = false;
+let mercadoBloqueado = false;
 
 function normKey_(s){
   return String(s).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "").trim();
@@ -615,6 +747,7 @@ function toast(msg, type='ok'){
 document.getElementById('tabs').addEventListener('click', (e)=>{
   const btn = e.target.closest('.tab-btn');
   if(!btn) return;
+  if(btn.dataset.view === 'migaraje' && sesion.tipo !== 'piloto') return;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   btn.classList.add('active');
@@ -624,6 +757,8 @@ document.getElementById('tabs').addEventListener('click', (e)=>{
 async function cargarTodo(){
   try{
     DB = await apiGet();
+    mercadoBloqueado = !!DB.mercadoBloqueado;
+    actualizarEstadoMercado();
     poblarCategorias();
     renderCoches();
     renderPilotos();
@@ -631,10 +766,65 @@ async function cargarTodo(){
     renderClasificacion();
     renderClasTeam();
     renderHistorial();
+    if(sesion.tipo === 'piloto') renderMiGaraje();
+    if(!sesionIniciada) prepararLogin();
   }catch(err){
     toast('No se pudieron cargar los datos: ' + err.message, 'err');
   }
 }
+
+function actualizarEstadoMercado(){
+  const el = document.getElementById('estadoMercado');
+  if(!el) return;
+  el.textContent = mercadoBloqueado ? 'Mercado cerrado' : 'Mercado abierto';
+  el.className = 'tag estado-mercado ' + (mercadoBloqueado ? 'cerrado' : 'abierto');
+}
+
+function prepararLogin(){
+  const sel = document.getElementById('loginPiloto');
+  if(Array.isArray(DB.pilotos)){
+    sel.innerHTML = DB.pilotos.map(p => `<option value="${p.ID_Piloto}">${p.Nombre_Piloto}</option>`).join('');
+  }
+  document.getElementById('modalLogin').classList.add('show');
+}
+
+function activarModoPiloto(){
+  document.getElementById('tabMiGaraje').style.display = '';
+}
+
+document.getElementById('btnLoginPiloto').addEventListener('click', async ()=>{
+  const idPiloto = document.getElementById('loginPiloto').value;
+  const pin = document.getElementById('loginPin').value;
+  if(!pin){ toast('Introduce tu PIN de seguridad.', 'err'); return; }
+
+  const btn = document.getElementById('btnLoginPiloto');
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.innerHTML = '<span class="spinner"></span>Comprobando…';
+  try{
+    const res = await apiPost({ action:'loginPiloto', idPiloto, pin });
+    sesion = { tipo:'piloto', idPiloto, pin };
+    sesionIniciada = true;
+    activarModoPiloto();
+    document.getElementById('modalLogin').classList.remove('show');
+    toast('Bienvenido, ' + (res.piloto ? res.piloto.Nombre_Piloto : '') + '.', 'ok');
+    renderCoches();
+    renderPilotos();
+    renderMiGaraje();
+  }catch(err){
+    toast(err.message, 'err');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+
+document.getElementById('btnLoginInvitado').addEventListener('click', ()=>{
+  sesion = { tipo:'invitado', idPiloto:null, pin:null };
+  sesionIniciada = true;
+  document.getElementById('modalLogin').classList.remove('show');
+  renderCoches();
+});
 
 function poblarCategorias(){
   const selectCat = document.getElementById('filterCategoriaCoches');
@@ -709,16 +899,20 @@ function fichaGrandeHtml(c){
   `;
 }
 
-// Tabla de especificaciones técnicas (columnas I-V de la hoja Coches)
-function especificacionesHtml(c){
-  const specs = [
+// Especificaciones técnicas repartidas en 2 columnas (columnas I-V de la hoja Coches).
+// En desktop se muestran lado a lado; en móvil se apilan en el mismo orden (misma vista de siempre).
+function especificacionesColumnas_(c){
+  const izquierda = [
     ['Disposición', getVal(c, 'Disposicion')],
     ['Motor', getVal(c, 'Motor')],
     ['Carrocería', getVal(c, 'Carroceria')],
     ['Año', getVal(c, 'Año')],
     ['Potencia', getVal(c, 'Potencia')],
     ['Par Motor', getVal(c, 'Par motor')],
-    ['Cilindrada', getVal(c, 'Cilindrada')],
+    ['Cilindrada', getVal(c, 'Cilindrada')]
+  ].filter(([, v]) => v !== '' && v !== undefined && v !== null);
+
+  const derecha = [
     ['Cilindros', getVal(c, 'Cilindros')],
     ['Peso', getVal(c, 'Peso')],
     ['Velocidad Máxima', getVal(c, 'Velocidad')],
@@ -727,12 +921,22 @@ function especificacionesHtml(c){
     ['Depósito', getVal(c, 'Deposito')]
   ].filter(([, v]) => v !== '' && v !== undefined && v !== null);
 
-  if(specs.length === 0){
-    return '<tr><td colspan="2" style="color:var(--text-dim);padding:8px 4px;">Sin especificaciones disponibles.</td></tr>';
-  }
+  return { izquierda, derecha };
+}
 
-  return specs.map(([label, val]) => `
-    <tr><td class="spec-label">${label}</td><td class="spec-value">${val}</td></tr>`).join('');
+function filasEspecs_(rows){
+  return rows.map(([label, val]) => `<tr><td class="spec-label">${label}</td><td class="spec-value">${val}</td></tr>`).join('');
+}
+
+function especificacionesHtml2Col_(c, idIzq, idDer){
+  const { izquierda, derecha } = especificacionesColumnas_(c);
+  let izqHtml = filasEspecs_(izquierda);
+  let derHtml = filasEspecs_(derecha);
+  if(!izqHtml && !derHtml){
+    izqHtml = '<tr><td colspan="2" style="color:var(--text-dim);padding:8px 4px;">Sin especificaciones disponibles.</td></tr>';
+  }
+  document.getElementById(idIzq).innerHTML = izqHtml;
+  document.getElementById(idDer).innerHTML = derHtml;
 }
 
 function nombrePiloto(id){
@@ -774,8 +978,23 @@ function renderCoches(){
     const ownerClass = disponible ? 'free' : (stockCar ? 'sold-out' : '');
     const precioCompra = Number(c.Precio_Compra_OC ?? c.Precio_Compra_EC ?? 0);
 
+    // Determina el estado del botón de compra: mercado cerrado > sin stock/vendido > sin sesión de piloto > disponible
+    const puedeComprar = disponible && !mercadoBloqueado && sesion.tipo === 'piloto';
+    let botonCompraHtml;
+    if(mercadoBloqueado){
+      botonCompraHtml = `<button class="action ghost" disabled>Mercado cerrado</button>`;
+    } else if(!disponible){
+      botonCompraHtml = `<button class="action ghost" disabled>${stockCar ? 'Sin stock' : 'En garaje de piloto'}</button>`;
+    } else if(sesion.tipo !== 'piloto'){
+      botonCompraHtml = `<button class="action ghost" disabled>Inicia sesión</button>`;
+    } else {
+      botonCompraHtml = `<button class="action buy" onclick="event.stopPropagation(); abrirModalComprar('${c.ID_Coche}')">Comprar coche</button>`;
+    }
+
+    // La ficha del coche siempre se puede abrir (aunque el mercado esté cerrado o no haya stock);
+    // solo cambia si el botón de "Comprar" dentro de la ficha está activo o no.
     return `
-      <div class="car-card" ${disponible ? `onclick="abrirModalComprar('${c.ID_Coche}')" style="cursor:pointer;"` : ''}>
+      <div class="car-card" onclick="abrirModalComprar('${c.ID_Coche}')" style="cursor:pointer;">
         <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
           <div class="stripe"></div>
           <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
@@ -788,10 +1007,7 @@ function renderCoches(){
             <span class="label">Precio</span>
             <span class="val">${precioCompra.toLocaleString()} OC</span>
           </div>
-          ${disponible
-            ? `<button class="action buy" onclick="event.stopPropagation(); abrirModalComprar('${c.ID_Coche}')">Comprar coche</button>`
-            : `<button class="action ghost" disabled>${stockCar ? 'Sin stock' : 'En garaje de piloto'}</button>`
-          }
+          ${botonCompraHtml}
         </div>
       </div>`;
   }).join('');
@@ -819,34 +1035,51 @@ function abrirModalComprar(idCoche){
   const coche = DB.coches.find(c => String(c.ID_Coche) === String(idCoche));
   if (!coche) return;
   const precioCompra = Number(coche.Precio_Compra_OC ?? coche.Precio_Compra_EC ?? 0);
+  const stockCar = esCocheDeStock(coche);
+  const disponible = cocheDisponible(coche);
 
   const fotoComprar = document.getElementById('fichaComprarFoto');
   fotoComprar.style.backgroundImage = "url('" + (coche.Imagen_URL || '') + "')";
   fotoComprar.innerHTML = fichaGrandeHtml(coche);
-  document.getElementById('tablaEspecsComprar').innerHTML = especificacionesHtml(coche);
+  especificacionesHtml2Col_(coche, 'tablaEspecsComprarIzq', 'tablaEspecsComprarDer');
 
-  document.getElementById('comprarTitulo').textContent = 'Comprar ' + coche.Nombre_Coche;
+  document.getElementById('comprarTitulo').textContent = coche.Nombre_Coche || '';
   document.getElementById('comprarSub').textContent = 'Precio: ' + precioCompra.toLocaleString() + ' OC';
-  const sel = document.getElementById('comprarPiloto');
-  sel.innerHTML = DB.pilotos.map(p => {
-    const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
-    return `<option value="${p.ID_Piloto}">${p.Nombre_Piloto} (${saldo.toLocaleString()} OC)</option>`;
-  }).join('');
-  document.getElementById('comprarPin').value = '';
+
+  const saldoBar = document.getElementById('compradorSaldoBar');
+  const btn = document.getElementById('btnConfirmarCompra');
+
+  if(sesion.tipo === 'piloto'){
+    const p = DB.pilotos.find(p => String(p.ID_Piloto) === String(sesion.idPiloto));
+    const saldo = p ? Number(p.Saldo_OC ?? p.Saldo_EC ?? 0) : 0;
+    saldoBar.innerHTML = `<span class="lbl-principal">Tu saldo</span><span class="saldo-valor">${saldo.toLocaleString()} OC</span>`;
+  } else {
+    saldoBar.innerHTML = `<span class="lbl-principal">Inicia sesión como piloto para comprar</span>`;
+  }
+
+  if(mercadoBloqueado){
+    btn.disabled = true; btn.textContent = 'Mercado cerrado';
+  } else if(!disponible){
+    btn.disabled = true; btn.textContent = stockCar ? 'Sin stock' : 'En garaje de piloto';
+  } else if(sesion.tipo !== 'piloto'){
+    btn.disabled = true; btn.textContent = 'Inicia sesión para comprar';
+  } else {
+    btn.disabled = false; btn.textContent = 'Confirmar compra';
+  }
+
   document.getElementById('modalComprar').classList.add('show');
 }
 
 document.getElementById('btnConfirmarCompra').addEventListener('click', async ()=>{
-  const idPiloto = document.getElementById('comprarPiloto').value;
-  const pin = document.getElementById('comprarPin').value;
-  const btn = document.getElementById('btnConfirmarCompra');
-  if(!pin){ toast('Introduce tu PIN de seguridad.', 'err'); return; }
+  if(sesion.tipo !== 'piloto'){ toast('Inicia sesión como piloto para comprar.', 'err'); return; }
+  if(mercadoBloqueado){ toast('El mercado está cerrado. No se permiten compras.', 'err'); return; }
 
+  const btn = document.getElementById('btnConfirmarCompra');
   btn.disabled = true;
   const original = btn.textContent;
   btn.innerHTML = '<span class="spinner"></span>Procesando transacción…';
   try{
-    const res = await apiPost({ action:'comprarCoche', idPiloto, pin, idCoche: cocheSeleccionadoId });
+    const res = await apiPost({ action:'comprarCoche', idPiloto: sesion.idPiloto, pin: sesion.pin, idCoche: cocheSeleccionadoId });
     toast(res.message || '¡Compra realizada con éxito!', 'ok');
     cerrarModal('modalComprar');
     await cargarTodo();
@@ -867,25 +1100,29 @@ function abrirModalVender(idCoche, idPiloto){
   const fotoVender = document.getElementById('fichaVenderFoto');
   fotoVender.style.backgroundImage = "url('" + (coche.Imagen_URL || '') + "')";
   fotoVender.innerHTML = fichaGrandeHtml(coche);
-  document.getElementById('tablaEspecsVender').innerHTML = especificacionesHtml(coche);
+  especificacionesHtml2Col_(coche, 'tablaEspecsVenderIzq', 'tablaEspecsVenderDer');
 
-  document.getElementById('venderTitulo').textContent = 'Vender ' + coche.Nombre_Coche;
+  document.getElementById('venderTitulo').textContent = coche.Nombre_Coche || '';
   document.getElementById('venderSub').textContent = 'Recibirás ' + precioVenta.toLocaleString() + ' OC del concesionario';
-  document.getElementById('venderPin').value = '';
+
+  const p = DB.pilotos.find(p => String(p.ID_Piloto) === String(idPiloto));
+  const saldo = p ? Number(p.Saldo_OC ?? p.Saldo_EC ?? 0) : 0;
+  document.getElementById('vendedorSaldoBar').innerHTML =
+    `<span class="lbl-principal">Tu saldo</span><span class="saldo-valor">${saldo.toLocaleString()} OC</span>`;
+
   document.getElementById('modalVender').classList.add('show');
 }
 
 document.getElementById('btnConfirmarVenta').addEventListener('click', async ()=>{
-  const pin = document.getElementById('venderPin').value;
   const btn = document.getElementById('btnConfirmarVenta');
-  if(!pin){ toast('Introduce tu PIN de seguridad.', 'err'); return; }
   if(!ventaContext){ toast('No se ha seleccionado ningún coche.', 'err'); return; }
+  if(mercadoBloqueado){ toast('El mercado está cerrado. No se permiten ventas.', 'err'); return; }
 
   btn.disabled = true;
   const original = btn.textContent;
   btn.innerHTML = '<span class="spinner"></span>Procesando transacción…';
   try{
-    const res = await apiPost({ action:'venderCoche', idPiloto: ventaContext.idPiloto, pin, idCoche: ventaContext.idCoche });
+    const res = await apiPost({ action:'venderCoche', idPiloto: ventaContext.idPiloto, pin: sesion.pin, idCoche: ventaContext.idCoche });
     toast(res.message || 'Coche vendido con éxito.', 'ok');
     cerrarModal('modalVender');
     await cargarTodo();
@@ -901,6 +1138,7 @@ function cerrarModal(id){
   document.getElementById(id).classList.remove('show');
 }
 document.querySelectorAll('.overlay').forEach(ov=>{
+  if(ov.id === 'modalLogin') return; // no se puede cerrar sin elegir piloto o invitado
   ov.addEventListener('click', e=>{ if(e.target === ov) ov.classList.remove('show'); });
 });
 
@@ -923,6 +1161,21 @@ function valorGaraje(idPiloto){
     .reduce((sum, x) => sum + (Number(x.coche.Precio_Venta_OC ?? x.coche.Precio_Venta_EC) || 0) * x.cantidad, 0);
 }
 
+// Determina el coche principal de un piloto: si solo tiene 1, ese; si tiene varios,
+// el marcado en la columna "Coche_Principal" (columna K de Pilotos), o el primero si aún no ha elegido.
+// La columna K guarda el NOMBRE del coche (Nombre_Coche), no su ID, por eso se compara por nombre.
+function principalCocheId(piloto){
+  const misCoches = cochesDelPiloto(piloto.ID_Piloto);
+  if(misCoches.length === 0) return null;
+  if(misCoches.length === 1) return misCoches[0].coche.ID_Coche;
+  const marcado = getVal(piloto, 'Coche_Principal');
+  if(marcado){
+    const encontrado = misCoches.find(x => String(x.coche.Nombre_Coche || '').trim() === String(marcado).trim());
+    if(encontrado) return encontrado.coche.ID_Coche;
+  }
+  return misCoches[0].coche.ID_Coche;
+}
+
 function renderPilotos(){
   const cont = document.getElementById('listaPilotos');
   if(!Array.isArray(DB.pilotos) || DB.pilotos.length === 0){
@@ -933,28 +1186,83 @@ function renderPilotos(){
     const misCoches = cochesDelPiloto(p.ID_Piloto);
     const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
     const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
-    
-    const campeonatos = getVal(p, 'Campeonatos') || 0;
-    const victorias = getVal(p, 'Victorias') || 0;
-    const podios = getVal(p, 'Podios') || 0;
-    const vueltaR = getVal(p, 'Vuelta R.') || 0;
-    const poles = getVal(p, 'Poles') || 0;
     const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
 
-    const statsHtml = `
-      <div class="pilot-stats-mini">
-        <div class="stat-box"><span class="emoji">👑</span><span class="val">${campeonatos}</span><span class="lbl">Camp.</span></div>
-        <div class="stat-box"><span class="emoji">🏆</span><span class="val">${victorias}</span><span class="lbl">Victorias</span></div>
-        <div class="stat-box"><span class="emoji">🥉</span><span class="val">${podios}</span><span class="lbl">Podios</span></div>
-        <div class="stat-box"><span class="emoji">⚡</span><span class="val">${vueltaR}</span><span class="lbl">Vuelta R.</span></div>
-        <div class="stat-box"><span class="emoji">🎯</span><span class="val">${poles}</span><span class="lbl">Poles</span></div>
-      </div>`;
+    const idPrincipal = principalCocheId(p);
+    const principal = idPrincipal ? misCoches.find(x => String(x.coche.ID_Coche) === String(idPrincipal)) : null;
 
-    const garajeHtml = statsHtml + (misCoches.length
-      ? misCoches.map(({coche:c, cantidad}) => {
-        const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
-        return `
-        <div class="car-card" onclick="abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')" style="cursor:pointer;">
+    const cocheHtml = principal ? (() => {
+      const c = principal.coche;
+      const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
+      return `
+        <div class="car-card-mini">
+          <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
+            <div class="stripe"></div>
+            <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
+            <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
+          </div>
+          <div class="body">
+            <p class="name">${c.Nombre_Coche || ''}</p>
+            <p class="owner">Coche principal · Valor de venta: ${precioVenta.toLocaleString()} OC</p>
+          </div>
+        </div>`;
+    })() : `<div class="empty-mini">Este piloto no tiene coches en su garaje.</div>`;
+
+    return `
+      <div class="pilot-card-v2" onclick="abrirModalPiloto('${p.ID_Piloto}')">
+        <div class="pilot-topbar">
+          <div class="pilot-avatar-sm" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
+          <div class="pilot-topbar-info">
+            <p class="name">${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
+            <div class="pilot-topbar-stats">
+              <span>Saldo: <b>${saldo.toLocaleString()} OC</b></span>
+              <span>Garaje: <b>${totalUnidades}</b> coches</span>
+            </div>
+          </div>
+        </div>
+        ${cocheHtml}
+      </div>`;
+  }).join('');
+}
+
+function abrirModalPiloto(idPiloto){
+  const p = DB.pilotos.find(p => String(p.ID_Piloto) === String(idPiloto));
+  if(!p) return;
+
+  const misCoches = cochesDelPiloto(p.ID_Piloto);
+  const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
+  const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
+  const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
+  const idPrincipal = principalCocheId(p);
+
+  document.getElementById('pilotoModalAvatar').style.backgroundImage = "url('" + (p.Foto_Avatar_URL || '') + "')";
+  document.getElementById('pilotoModalNombre').innerHTML = `${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}`;
+  document.getElementById('pilotoModalStats').innerHTML = `
+    <span class="stat oc">Saldo: <b>${saldo.toLocaleString()} OC</b></span>
+    <span class="stat">Garaje: <b>${totalUnidades}</b> coches</span>
+    <span class="stat">Valor garaje: <b>${valorGaraje(p.ID_Piloto).toLocaleString()} OC</b></span>`;
+
+  const campeonatos = getVal(p, 'Campeonatos') || 0;
+  const victorias = getVal(p, 'Victorias') || 0;
+  const podios = getVal(p, 'Podios') || 0;
+  const vueltaR = getVal(p, 'Vuelta R.') || 0;
+  const poles = getVal(p, 'Poles') || 0;
+  document.getElementById('pilotoModalStatBoxes').innerHTML = `
+    <div class="stat-box"><span class="emoji">👑</span><span class="val">${campeonatos}</span><span class="lbl">Camp.</span></div>
+    <div class="stat-box"><span class="emoji">🏆</span><span class="val">${victorias}</span><span class="lbl">Victorias</span></div>
+    <div class="stat-box"><span class="emoji">🥉</span><span class="val">${podios}</span><span class="lbl">Podios</span></div>
+    <div class="stat-box"><span class="emoji">⚡</span><span class="val">${vueltaR}</span><span class="lbl">Vuelta R.</span></div>
+    <div class="stat-box"><span class="emoji">🎯</span><span class="val">${poles}</span><span class="lbl">Poles</span></div>`;
+
+  const garajeGrid = document.getElementById('pilotoModalGaraje');
+  if(misCoches.length === 0){
+    garajeGrid.innerHTML = '<div class="empty-state">Este piloto no tiene coches en su garaje.</div>';
+  } else {
+    garajeGrid.innerHTML = misCoches.map(({coche:c, cantidad})=>{
+      const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
+      const esPrincipal = String(c.ID_Coche) === String(idPrincipal);
+      return `
+        <div class="car-card">
           <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
             <div class="stripe"></div>
             <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
@@ -964,33 +1272,121 @@ function renderPilotos(){
           <div class="body">
             <p class="name">${c.Nombre_Coche || ''}</p>
             <p class="owner">Valor de venta: ${precioVenta.toLocaleString()} OC ${cantidad > 1 ? '/ unidad' : ''}</p>
-            <button class="action sell" onclick="event.stopPropagation(); abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')">Vender ${cantidad > 1 ? '1 unidad' : ''} por ${precioVenta.toLocaleString()} OC</button>
+            ${esPrincipal ? '<span class="principal-tag">Coche principal</span>' : ''}
           </div>
         </div>`;
-      }).join('')
-      : '<div class="empty">Este piloto no tiene coches en su garaje.</div>');
+    }).join('');
+  }
 
-    return `
-      <div class="pilot-card" id="pc-${p.ID_Piloto}">
-        <div class="pilot-head" onclick="togglePiloto('${p.ID_Piloto}')">
-          <div class="pilot-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
-          <div class="pilot-info">
-            <p class="name">${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
-            <div class="pilot-stats">
-              <span class="stat oc">Saldo: <b>${saldo.toLocaleString()} OC</b></span>
-              <span class="stat">Garaje: <b>${totalUnidades}</b> coches</span>
-              <span class="stat">Valor garaje: <b>${valorGaraje(p.ID_Piloto).toLocaleString()} OC</b></span>
-            </div>
-          </div>
-          <span class="chevron">›</span>
-        </div>
-        <div class="garage">${garajeHtml}</div>
-      </div>`;
-  }).join('');
+  document.getElementById('modalPiloto').classList.add('show');
 }
 
-function togglePiloto(id){
-  document.getElementById('pc-' + id).classList.toggle('open');
+function renderMiGaraje(){
+  const cont = document.getElementById('miGarajeContenido');
+  if(!cont) return;
+  if(sesion.tipo !== 'piloto'){
+    cont.innerHTML = '<div class="empty-state">Inicia sesión con tu piloto para ver tu garaje.</div>';
+    return;
+  }
+  const p = DB.pilotos.find(p => String(p.ID_Piloto) === String(sesion.idPiloto));
+  if(!p){
+    cont.innerHTML = '<div class="empty-state">No se ha podido cargar tu ficha de piloto.</div>';
+    return;
+  }
+
+  const misCoches = cochesDelPiloto(p.ID_Piloto);
+  const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
+  const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
+  const equipo = getVal(p, 'Equipo');
+
+  const campeonatos = getVal(p, 'Campeonatos') || 0;
+  const victorias = getVal(p, 'Victorias') || 0;
+  const podios = getVal(p, 'Podios') || 0;
+  const vueltaR = getVal(p, 'Vuelta R.') || 0;
+  const poles = getVal(p, 'Poles') || 0;
+
+  const cochesHtml = misCoches.length ? misCoches.map(({coche:c, cantidad})=>{
+    const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
+    const puedeVender = !mercadoBloqueado;
+    return `
+      <div class="car-card" ${puedeVender ? `onclick="abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')" style="cursor:pointer;"` : ''}>
+        <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
+          <div class="stripe"></div>
+          <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
+          <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
+          ${cantidad > 1 ? `<div class="qty-badge">x${cantidad}</div>` : ''}
+        </div>
+        <div class="body">
+          <p class="name">${c.Nombre_Coche || ''}</p>
+          <p class="owner">Valor de venta: ${precioVenta.toLocaleString()} OC ${cantidad > 1 ? '/ unidad' : ''}</p>
+          ${puedeVender
+            ? `<button class="action sell" onclick="event.stopPropagation(); abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')">Vender ${cantidad > 1 ? '1 unidad' : ''} por ${precioVenta.toLocaleString()} OC</button>`
+            : `<button class="action ghost" disabled>Mercado cerrado</button>`
+          }
+        </div>
+      </div>`;
+  }).join('') : '';
+
+  const selectorHtml = misCoches.length ? `
+    <div class="coche-principal-bar">
+      <span class="lbl-principal">Valida tu coche principal</span>
+      <select class="select-input" id="selectCochePrincipal">
+        ${misCoches.map(({coche:c}) => `<option value="${c.ID_Coche}">${c.Nombre_Coche}</option>`).join('')}
+      </select>
+      <button class="action buy" id="btnAceptarCochePrincipal">Aceptar</button>
+    </div>` : '';
+
+  cont.innerHTML = `
+    <div class="mi-garaje-ficha">
+      <div class="mi-garaje-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
+      <div class="mi-garaje-info">
+        <p class="name">${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
+        <div class="mi-garaje-desc">
+          <div class="row"><span class="lbl">ID Piloto</span><span class="val">${p.ID_Piloto || ''}</span></div>
+          <div class="row"><span class="lbl">Saldo</span><span class="val">${saldo.toLocaleString()} OC</span></div>
+          <div class="row"><span class="lbl">Equipo</span><span class="val">${equipo || '—'}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="pilot-stats-mini">
+      <div class="stat-box"><span class="emoji">👑</span><span class="val">${campeonatos}</span><span class="lbl">Camp.</span></div>
+      <div class="stat-box"><span class="emoji">🏆</span><span class="val">${victorias}</span><span class="lbl">Victorias</span></div>
+      <div class="stat-box"><span class="emoji">🥉</span><span class="val">${podios}</span><span class="lbl">Podios</span></div>
+      <div class="stat-box"><span class="emoji">⚡</span><span class="val">${vueltaR}</span><span class="lbl">Vuelta R.</span></div>
+      <div class="stat-box"><span class="emoji">🎯</span><span class="val">${poles}</span><span class="lbl">Poles</span></div>
+    </div>
+    <div class="checkered-divider"></div>
+    <div class="mi-garaje-seccion">
+      <h3>Coches en propiedad</h3>
+      ${misCoches.length ? `<div class="grid">${cochesHtml}</div>` : '<div class="empty-state">No tiene coches en propiedad.</div>'}
+    </div>
+    ${misCoches.length ? '<div class="checkered-divider"></div>' : ''}
+    ${selectorHtml}
+  `;
+
+  if(misCoches.length){
+    const idPrincipal = principalCocheId(p);
+    const sel = document.getElementById('selectCochePrincipal');
+    if(sel && idPrincipal) sel.value = idPrincipal;
+
+    document.getElementById('btnAceptarCochePrincipal').addEventListener('click', async ()=>{
+      const idCoche = document.getElementById('selectCochePrincipal').value;
+      const btn = document.getElementById('btnAceptarCochePrincipal');
+      btn.disabled = true;
+      const original = btn.textContent;
+      btn.innerHTML = '<span class="spinner"></span>Guardando…';
+      try{
+        await apiPost({ action:'elegirCochePrincipal', idPiloto: sesion.idPiloto, pin: sesion.pin, idCoche });
+        toast('Coche principal actualizado.', 'ok');
+        await cargarTodo();
+      }catch(err){
+        toast(err.message, 'err');
+      }finally{
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+  }
 }
 
 function renderCalendario(){
@@ -1081,25 +1477,44 @@ function abrirModalResultados(ronda){
   document.getElementById('modalResultados').classList.add('show');
 }
 
+// Agrupa una lista por el valor de "Clase" (manteniendo el orden de primera aparición)
+// y reinicia la numeración de posiciones (1,2,3…) dentro de cada clase.
+function agruparPorClase_(list){
+  const grupos = [];
+  const indice = {};
+  list.forEach(item=>{
+    const clase = String(getVal(item, 'Clase') || '').trim();
+    if(!(clase in indice)){
+      indice[clase] = grupos.length;
+      grupos.push({ clase, items: [] });
+    }
+    grupos[indice[clase]].items.push(item);
+  });
+
+  const resultado = [];
+  grupos.forEach(g=>{
+    const ordenado = g.items.slice().sort((a,b)=>{
+      const pa = Number(getVal(a, 'Posicion')), pb = Number(getVal(b, 'Posicion'));
+      if(!isNaN(pa) && !isNaN(pb) && pa !== 0 && pb !== 0) return pa - pb;
+      return (Number(getVal(b, 'Puntos')) || 0) - (Number(getVal(a, 'Puntos')) || 0);
+    });
+    ordenado.forEach((item, i) => resultado.push({ item, posClase: i + 1 }));
+  });
+  return resultado;
+}
+
 function renderClasificacion(){
   const tbody = document.getElementById('tablaClasificacion');
   if (!Array.isArray(DB.clasificacion)) return;
-  let list = DB.clasificacion.slice();
+  const agrupado = agruparPorClase_(DB.clasificacion);
 
-  list.sort((a,b)=>{
-    const pa = Number(getVal(a, 'Posicion')), pb = Number(getVal(b, 'Posicion'));
-    if(!isNaN(pa) && !isNaN(pb) && pa !== 0 && pb !== 0) return pa - pb;
-    return (Number(getVal(b, 'Puntos')) || 0) - (Number(getVal(a, 'Puntos')) || 0);
-  });
-
-  if(list.length === 0){
+  if(agrupado.length === 0){
     tbody.innerHTML = '<tr><td colspan="13" style="color:var(--text-dim); text-align:center;">Todavía no hay clasificación registrada.</td></tr>';
     return;
   }
 
-  tbody.innerHTML = list.map((c,i)=>{
-    const pos = getVal(c, 'Posicion') || (i+1);
-    const posBadgeClass = i===0 ? 'p1' : (i===1 ? 'p2' : (i===2 ? 'p3' : ''));
+  tbody.innerHTML = agrupado.map(({item:c, posClase})=>{
+    const posBadgeClass = posClase===1 ? 'p1' : (posClase===2 ? 'p2' : (posClase===3 ? 'p3' : ''));
     const pen = getVal(c, 'Pen.');
     
     const valMarca = String(getVal(c, 'Marca') || '').trim();
@@ -1111,7 +1526,7 @@ function renderClasificacion(){
     
     return `
     <tr>
-      <td><span class="pos-badge ${posBadgeClass}">${pos}</span></td>
+      <td><span class="pos-badge ${posBadgeClass}">${posClase}</span></td>
       <td><span class="class-tag">${getVal(c, 'Clase')}</span></td>
       <td>${getVal(c, 'Piloto')}</td>
       <td>${getVal(c, 'Lic.')}</td>
@@ -1131,27 +1546,20 @@ function renderClasificacion(){
 function renderClasTeam(){
   const tbody = document.getElementById('tablaClasTeam');
   if (!Array.isArray(DB.clasteam)) return;
-  let list = DB.clasteam.slice();
+  const agrupado = agruparPorClase_(DB.clasteam);
 
-  list.sort((a,b)=>{
-    const pa = Number(getVal(a, 'Posicion')), pb = Number(getVal(b, 'Posicion'));
-    if(!isNaN(pa) && !isNaN(pb) && pa !== 0 && pb !== 0) return pa - pb;
-    return (Number(getVal(b, 'Puntos')) || 0) - (Number(getVal(a, 'Puntos')) || 0);
-  });
-
-  if(list.length === 0){
+  if(agrupado.length === 0){
     tbody.innerHTML = '<tr><td colspan="9" style="color:var(--text-dim); text-align:center;">Todavía no hay clasificación por equipos registrada.</td></tr>';
     return;
   }
 
-  tbody.innerHTML = list.map((c,i)=>{
-    const pos = getVal(c, 'Posicion') || (i+1);
-    const posBadgeClass = i===0 ? 'p1' : (i===1 ? 'p2' : (i===2 ? 'p3' : ''));
+  tbody.innerHTML = agrupado.map(({item:c, posClase})=>{
+    const posBadgeClass = posClase===1 ? 'p1' : (posClase===2 ? 'p2' : (posClase===3 ? 'p3' : ''));
     const pen = getVal(c, 'Pen.');
 
     return `
     <tr>
-      <td><span class="pos-badge ${posBadgeClass}">${pos}</span></td>
+      <td><span class="pos-badge ${posBadgeClass}">${posClase}</span></td>
       <td>${getVal(c, 'Pilotos')}</td>
       <td>${getVal(c, 'Equipo')}</td>
       <td class="pts-white">${getVal(c, 'Puntos') || 0}</td>
