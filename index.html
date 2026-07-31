@@ -70,6 +70,15 @@
   nav.tabs button.active .num{background:var(--cyan);}
   nav.tabs button:hover{color:var(--text);}
 
+  .logout-btn{
+    background:transparent;border:1px solid var(--hairline);color:var(--text-dim);
+    padding:8px 14px;border-radius:8px;font-size:12.5px;cursor:pointer;
+    font-family:'Inter',sans-serif;font-weight:500;transition:all .15s ease;white-space:nowrap;
+  }
+  .logout-btn:hover{color:var(--danger);border-color:rgba(255,71,87,0.4);}
+
+  .brk-mobile{display:none;}
+
   main{max-width:1500px;margin:0 auto;padding:28px 20px 80px;}
   section.view{display:none;}
   section.view.active{display:block;animation:fadeIn .25s ease;}
@@ -458,6 +467,43 @@
     .filters-bar{width:100%;}
     .search-input, .select-input{max-width:100%;}
   }
+
+  /* ============================================================
+     AJUSTES SOLO MÓVIL — a partir de aquí, todo queda igual en desktop
+     ============================================================ */
+  @media (max-width:760px){
+    body{overflow-x:hidden;}
+
+    /* Logo centrado, con el texto debajo (también centrado) */
+    .brand{flex-direction:column;align-items:center;gap:8px;text-align:center;}
+    .brand-logo{height:72px;}
+    .brand-text{margin-left:0;}
+
+    /* Menú: 01-03 en una línea, 04-06 Mi garaje en la siguiente */
+    nav.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;}
+    nav.tabs button{flex:none;padding:8px 4px;font-size:11.5px;gap:5px;}
+    .logout-btn{grid-column:1/-1;justify-self:center;margin-top:2px;}
+
+    /* Salto de línea del subtítulo de Concesionario */
+    .brk-mobile{display:inline;}
+
+    /* Ficha de piloto (modal) y Mi Garaje: las 5 estadísticas caben en una sola fila */
+    .pilot-stats-mini{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;max-width:100%;}
+    .pilot-stats-mini .stat-box{padding:8px 2px;}
+    .pilot-stats-mini .stat-box .emoji{font-size:14px;margin-bottom:2px;}
+    .pilot-stats-mini .stat-box .val{font-size:13px;}
+    .pilot-stats-mini .stat-box .lbl{font-size:7px;letter-spacing:0;line-height:1.2;}
+
+    /* Calendario: una ficha de circuito por fila */
+    .calendario-grid{grid-template-columns:1fr;width:100%;}
+
+    /* Resultados / Clasificación / Historial: la tabla se ajusta al ancho del
+       móvil dentro de su propio contenedor (scroll horizontal manual si hace falta) */
+    #modalResultados .modal{width:96%;padding:16px;}
+    .table-wrap{max-width:100%;}
+    table{font-size:12.5px;}
+    thead th, tbody td{padding:8px 8px;}
+  }
 </style>
 </head>
 <body>
@@ -478,6 +524,7 @@
       <button class="tab-btn" data-view="clasificacion"><span class="num">04</span> Clasificación</button>
       <button class="tab-btn" data-view="historial"><span class="num">05</span> Historial</button>
       <button class="tab-btn" data-view="migaraje" id="tabMiGaraje" style="display:none;"><span class="num">06</span> Mi garaje</button>
+      <button class="logout-btn" id="btnCerrarSesion" style="display:none;">Cerrar sesión</button>
     </nav>
   </div>
 </header>
@@ -488,7 +535,7 @@
     <div class="view-head">
       <div>
         <h2>Concesionario</h2>
-        <p>Catálogo de vehículos disponibles y garajes de la parrilla <span id="estadoMercado" class="tag estado-mercado"></span></p>
+        <p>Catálogo de vehículos disponibles y<br class="brk-mobile"> garajes de la parrilla <span id="estadoMercado" class="tag estado-mercado"></span></p>
       </div>
       <div class="filters-bar">
         <select class="select-input" id="filterCategoriaCoches">
@@ -694,7 +741,7 @@
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbzQT8CABMIhP4QK3ddAoZMbnQcJzuCv4il8qfw8PawCtq2Bq3pBWTLEWLiA51C4R0nTWA/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxd03QxU2LLAs000l3uY2eWhj7D-y2q3VwYLY5QjBIojRuU-E5D0C18Xycy2wGTTyKHug/exec';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
 let cocheFilter = 'todos';
@@ -723,6 +770,13 @@ async function apiGet(){
   const json = await res.json();
   if(!json.ok) throw new Error(json.error || 'Error al cargar datos');
   return json.data;
+}
+
+async function apiGetAction(action){
+  const res = await fetch(API_URL + '?action=' + encodeURIComponent(action));
+  const json = await res.json();
+  if(!json.ok) throw new Error(json.error || 'Error al cargar datos');
+  return json;
 }
 
 async function apiPost(payload){
@@ -754,6 +808,8 @@ document.getElementById('tabs').addEventListener('click', (e)=>{
   document.getElementById('view-' + btn.dataset.view).classList.add('active');
 });
 
+const SESION_STORAGE_KEY = 'ros_sesion';
+
 async function cargarTodo(){
   try{
     DB = await apiGet();
@@ -773,6 +829,36 @@ async function cargarTodo(){
   }
 }
 
+// Pinta el login al instante con una lista ligera de pilotos (solo ID + nombre),
+// sin esperar a que se lean el resto de hojas del Sheet. El resto de datos
+// (coches, calendario, clasificación, historial…) se cargan en paralelo con cargarTodo().
+async function prepararLoginRapido(){
+  const sel = document.getElementById('loginPiloto');
+  sel.innerHTML = '<option>Cargando pilotos…</option>';
+  document.getElementById('modalLogin').classList.add('show');
+  try{
+    const res = await apiGetAction('pilotosLogin');
+    const pilotos = res.pilotos || [];
+    sel.innerHTML = pilotos.map(p => `<option value="${p.ID_Piloto}">${p.Nombre_Piloto}</option>`).join('');
+  }catch(err){
+    sel.innerHTML = '<option value="">No se pudo cargar la lista de pilotos</option>';
+  }
+}
+
+// Repuebla el desplegable de login con la lista completa una vez han llegado
+// todos los datos (por si prepararLoginRapido no llegó a tiempo). No hace nada
+// si el usuario ya ha iniciado sesión mientras tanto.
+function prepararLogin(){
+  if(sesionIniciada) return;
+  const sel = document.getElementById('loginPiloto');
+  if(Array.isArray(DB.pilotos) && DB.pilotos.length){
+    const valorActual = sel.value;
+    sel.innerHTML = DB.pilotos.map(p => `<option value="${p.ID_Piloto}">${p.Nombre_Piloto}</option>`).join('');
+    if(valorActual) sel.value = valorActual;
+  }
+  document.getElementById('modalLogin').classList.add('show');
+}
+
 function actualizarEstadoMercado(){
   const el = document.getElementById('estadoMercado');
   if(!el) return;
@@ -780,16 +866,12 @@ function actualizarEstadoMercado(){
   el.className = 'tag estado-mercado ' + (mercadoBloqueado ? 'cerrado' : 'abierto');
 }
 
-function prepararLogin(){
-  const sel = document.getElementById('loginPiloto');
-  if(Array.isArray(DB.pilotos)){
-    sel.innerHTML = DB.pilotos.map(p => `<option value="${p.ID_Piloto}">${p.Nombre_Piloto}</option>`).join('');
-  }
-  document.getElementById('modalLogin').classList.add('show');
-}
-
 function activarModoPiloto(){
   document.getElementById('tabMiGaraje').style.display = '';
+}
+
+function mostrarBotonCerrarSesion(){
+  document.getElementById('btnCerrarSesion').style.display = '';
 }
 
 document.getElementById('btnLoginPiloto').addEventListener('click', async ()=>{
@@ -805,7 +887,9 @@ document.getElementById('btnLoginPiloto').addEventListener('click', async ()=>{
     const res = await apiPost({ action:'loginPiloto', idPiloto, pin });
     sesion = { tipo:'piloto', idPiloto, pin };
     sesionIniciada = true;
+    sessionStorage.setItem(SESION_STORAGE_KEY, JSON.stringify(sesion));
     activarModoPiloto();
+    mostrarBotonCerrarSesion();
     document.getElementById('modalLogin').classList.remove('show');
     toast('Bienvenido, ' + (res.piloto ? res.piloto.Nombre_Piloto : '') + '.', 'ok');
     renderCoches();
@@ -822,9 +906,56 @@ document.getElementById('btnLoginPiloto').addEventListener('click', async ()=>{
 document.getElementById('btnLoginInvitado').addEventListener('click', ()=>{
   sesion = { tipo:'invitado', idPiloto:null, pin:null };
   sesionIniciada = true;
+  sessionStorage.setItem(SESION_STORAGE_KEY, JSON.stringify(sesion));
+  mostrarBotonCerrarSesion();
   document.getElementById('modalLogin').classList.remove('show');
   renderCoches();
 });
+
+document.getElementById('btnCerrarSesion').addEventListener('click', ()=>{
+  sessionStorage.removeItem(SESION_STORAGE_KEY);
+  sesion = { tipo:null, idPiloto:null, pin:null };
+  sesionIniciada = false;
+
+  document.getElementById('tabMiGaraje').style.display = 'none';
+  document.getElementById('btnCerrarSesion').style.display = 'none';
+
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelector('.tab-btn[data-view="concesionario"]').classList.add('active');
+  document.getElementById('view-concesionario').classList.add('active');
+
+  renderCoches();
+  renderPilotos();
+  prepararLoginRapido();
+});
+
+// Arranque de la web: si hay una sesión guardada en este navegador (mientras la
+// pestaña siga abierta) se restaura sin pedir usuario/PIN de nuevo. Si no,
+// se muestra el login al instante con una lista ligera de pilotos mientras el
+// resto de los datos de la web se cargan en paralelo por detrás.
+async function iniciar(){
+  const guardada = sessionStorage.getItem(SESION_STORAGE_KEY);
+  if(guardada){
+    try{
+      const parsed = JSON.parse(guardada);
+      if(parsed && (parsed.tipo === 'piloto' || parsed.tipo === 'invitado')){
+        sesion = parsed;
+        sesionIniciada = true;
+        if(sesion.tipo === 'piloto') activarModoPiloto();
+        mostrarBotonCerrarSesion();
+      }
+    }catch(err){
+      // Sesión guardada corrupta: se ignora y se pide login de nuevo.
+    }
+  }
+
+  if(!sesionIniciada){
+    prepararLoginRapido();
+  }
+
+  await cargarTodo();
+}
 
 function poblarCategorias(){
   const selectCat = document.getElementById('filterCategoriaCoches');
@@ -905,10 +1036,9 @@ function especificacionesColumnas_(c){
   const izquierda = [
     ['Disposición', getVal(c, 'Disposicion')],
     ['Motor', getVal(c, 'Motor')],
-    ['Carrocería', getVal(c, 'Carroceria')],
+    ['Par Motor', getVal(c, 'Par')],
     ['Año', getVal(c, 'Año')],
     ['Potencia', getVal(c, 'Potencia')],
-    ['Par Motor', getVal(c, 'Par motor')],
     ['Cilindrada', getVal(c, 'Cilindrada')]
   ].filter(([, v]) => v !== '' && v !== undefined && v !== null);
 
@@ -1348,7 +1478,7 @@ function renderMiGaraje(){
         </div>
       </div>
     </div>
-    <div class="pilot-stats-mini">
+    <div class="pilot-stats-mini" id="miGarajeStatBoxes">
       <div class="stat-box"><span class="emoji">👑</span><span class="val">${campeonatos}</span><span class="lbl">Camp.</span></div>
       <div class="stat-box"><span class="emoji">🏆</span><span class="val">${victorias}</span><span class="lbl">Victorias</span></div>
       <div class="stat-box"><span class="emoji">🥉</span><span class="val">${podios}</span><span class="lbl">Podios</span></div>
@@ -1377,8 +1507,13 @@ function renderMiGaraje(){
       btn.innerHTML = '<span class="spinner"></span>Guardando…';
       try{
         await apiPost({ action:'elegirCochePrincipal', idPiloto: sesion.idPiloto, pin: sesion.pin, idCoche });
+        // Actualiza el dato en memoria al instante (sin esperar una recarga completa del Sheet).
+        const pil = DB.pilotos.find(pp => String(pp.ID_Piloto) === String(sesion.idPiloto));
+        const cocheElegido = DB.coches.find(cc => String(cc.ID_Coche) === String(idCoche));
+        if(pil) pil.Coche_Principal = cocheElegido ? cocheElegido.Nombre_Coche : idCoche;
         toast('Coche principal actualizado.', 'ok');
-        await cargarTodo();
+        renderPilotos();
+        renderMiGaraje();
       }catch(err){
         toast(err.message, 'err');
       }finally{
@@ -1616,7 +1751,7 @@ document.getElementById('searchHistorial').addEventListener('input', e=>{
   renderHistorial();
 });
 
-cargarTodo();
+iniciar();
 </script>
 
 </body>
