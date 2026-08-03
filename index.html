@@ -224,7 +224,12 @@
     width:110px;height:110px;border-radius:50%;background:var(--panel-2) center/cover;
     border:2px solid var(--hairline);flex:none;
   }
+  .mi-garaje-info .dorsal{
+    font-family:'Teko',sans-serif;font-weight:700;font-size:46px;line-height:1;
+    color:var(--amber);margin:0 0 2px;letter-spacing:1px;
+  }
   .mi-garaje-info .name{font-family:'Teko',sans-serif;font-size:32px;margin:0 0 10px;line-height:1;}
+  .mi-garaje-info .flag{font-size:22px;margin-left:6px;vertical-align:middle;}
   .mi-garaje-desc{display:flex;flex-direction:column;gap:6px;}
   .mi-garaje-desc .row{display:flex;gap:10px;align-items:baseline;}
   .mi-garaje-desc .lbl{color:var(--text-dim);text-transform:uppercase;font-size:11px;letter-spacing:.5px;min-width:90px;}
@@ -237,6 +242,12 @@
   .coche-principal-bar .lbl-principal{color:var(--text-dim);font-size:13.5px;white-space:nowrap;}
   .coche-principal-bar select{flex:1;min-width:200px;max-width:none;}
   .coche-principal-bar button{flex:none;width:auto;padding:10px 22px;}
+  .validacion-principal{
+    margin:10px 0 0;font-size:13.5px;font-weight:600;padding:10px 14px;
+    border-radius:8px;border:1px solid;
+  }
+  .validacion-principal.ok{color:var(--green);background:var(--green-dim);border-color:rgba(0,229,199,0.35);}
+  .validacion-principal.pendiente{color:var(--danger);background:var(--danger-dim);border-color:rgba(255,71,87,0.35);}
 
   .estado-mercado{margin-left:10px;}
   .estado-mercado.abierto{background:var(--green-dim);color:var(--green);}
@@ -474,17 +485,18 @@
   @media (max-width:760px){
     body{overflow-x:hidden;}
 
-    /* Logo centrado, con el texto debajo (también centrado) */
+    /* Logo centrado, el doble de grande, con el texto debajo (también centrado) */
     .brand{flex-direction:column;align-items:center;gap:8px;text-align:center;}
-    .brand-logo{height:72px;}
+    .brand-logo{height:144px;}
     .brand-text{margin-left:0;}
+    .brand-dot{display:none;}
 
     /* Menú: 01-03 en una línea, 04-06 Mi garaje en la siguiente */
     nav.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;}
     nav.tabs button{flex:none;padding:8px 4px;font-size:11.5px;gap:5px;}
     .logout-btn{grid-column:1/-1;justify-self:center;margin-top:2px;}
 
-    /* Salto de línea del subtítulo de Concesionario */
+    /* Salto de línea del subtítulo de Concesionario y del eslogan del encabezado */
     .brk-mobile{display:inline;}
 
     /* Ficha de piloto (modal) y Mi Garaje: las 5 estadísticas caben en una sola fila */
@@ -497,12 +509,16 @@
     /* Calendario: una ficha de circuito por fila */
     .calendario-grid{grid-template-columns:1fr;width:100%;}
 
-    /* Resultados / Clasificación / Historial: la tabla se ajusta al ancho del
-       móvil dentro de su propio contenedor (scroll horizontal manual si hace falta) */
+    /* Resultados / Clasificación / Historial: la tabla se comprime al ancho real
+       de la pantalla (sin scroll horizontal) — el usuario hace zoom manualmente
+       para leer el detalle, tal y como se ha pedido. */
     #modalResultados .modal{width:96%;padding:16px;}
-    .table-wrap{max-width:100%;}
-    table{font-size:12.5px;}
-    thead th, tbody td{padding:8px 8px;}
+    .table-wrap{max-width:100%;overflow-x:hidden;}
+    table{width:100%;table-layout:fixed;font-size:9.5px;}
+    thead th, tbody td{
+      padding:5px 3px;white-space:normal;word-break:break-word;
+      overflow:hidden;text-overflow:ellipsis;
+    }
   }
 </style>
 </head>
@@ -514,7 +530,7 @@
       <img class="brand-logo" src="https://raw.githubusercontent.com/race-online/es/refs/heads/main/logos/logopng.webp" alt="Race Online Shop">
       <div class="brand-text">
         <h1>Race Online Shop</h1>
-        <span>Assetto Corsa Evo Academy · Economía de comunidad</span>
+        <span>Assetto Corsa Evo Academy<span class="brand-dot"> · </span><br class="brk-mobile">Economía de comunidad</span>
       </div>
     </div>
     <nav class="tabs" id="tabs">
@@ -741,7 +757,7 @@
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxd03QxU2LLAs000l3uY2eWhj7D-y2q3VwYLY5QjBIojRuU-E5D0C18Xycy2wGTTyKHug/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwoWdtDnZ1QiSsBNXr5olRmYOGgfXanpQlDJNy1afhfhcL6dEUlmUFbrgqz9qnuNa2Dpw/exec';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
 let cocheFilter = 'todos';
@@ -1019,6 +1035,16 @@ function catTagClass(categoria){
   return '';
 }
 
+// Convierte un código de país ISO 3166-1 alpha-2 (ej. "es", "ar", "mx") en su
+// emoji de bandera correspondiente, usando los símbolos Unicode "regional indicator".
+// No requiere ninguna imagen ni enlace externo: funciona con cualquier código de 2 letras.
+function banderaEmoji(codigoPais){
+  const cc = String(codigoPais || '').trim().toUpperCase();
+  if(cc.length !== 2 || !/^[A-Z]{2}$/.test(cc)) return '';
+  const puntos = [...cc].map(letra => 0x1F1E6 + (letra.charCodeAt(0) - 65));
+  return String.fromCodePoint(...puntos);
+}
+
 // HTML del interior de la ficha grande (foto ya se aplica como background aparte)
 function fichaGrandeHtml(c){
   const cat = c.Categoria || '';
@@ -1035,8 +1061,7 @@ function fichaGrandeHtml(c){
 function especificacionesColumnas_(c){
   const izquierda = [
     ['Disposición', getVal(c, 'Disposicion')],
-    ['Motor', getVal(c, 'Motor')],
-    ['Par Motor', getVal(c, 'Par')],
+    ['Par Motor', getVal(c, 'Par Motor')],
     ['Año', getVal(c, 'Año')],
     ['Potencia', getVal(c, 'Potencia')],
     ['Cilindrada', getVal(c, 'Cilindrada')]
@@ -1046,7 +1071,6 @@ function especificacionesColumnas_(c){
     ['Cilindros', getVal(c, 'Cilindros')],
     ['Peso', getVal(c, 'Peso')],
     ['Velocidad Máxima', getVal(c, 'Velocidad')],
-    ['0-100 km/h', getVal(c, '0-100')],
     ['Marchas', getVal(c, 'Marchas')],
     ['Depósito', getVal(c, 'Deposito')]
   ].filter(([, v]) => v !== '' && v !== undefined && v !== null);
@@ -1428,6 +1452,10 @@ function renderMiGaraje(){
   const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
   const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
   const equipo = getVal(p, 'Equipo');
+  const dorsal = getVal(p, 'Dorsal');
+  const bandera = banderaEmoji(getVal(p, 'Nacionalidad'));
+  const idPrincipal = principalCocheId(p);
+  const validado = String(getVal(p, 'Coche_Principal') || '').trim() !== '';
 
   const campeonatos = getVal(p, 'Campeonatos') || 0;
   const victorias = getVal(p, 'Victorias') || 0;
@@ -1438,6 +1466,7 @@ function renderMiGaraje(){
   const cochesHtml = misCoches.length ? misCoches.map(({coche:c, cantidad})=>{
     const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
     const puedeVender = !mercadoBloqueado;
+    const esPrincipal = String(c.ID_Coche) === String(idPrincipal);
     return `
       <div class="car-card" ${puedeVender ? `onclick="abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')" style="cursor:pointer;"` : ''}>
         <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
@@ -1449,9 +1478,10 @@ function renderMiGaraje(){
         <div class="body">
           <p class="name">${c.Nombre_Coche || ''}</p>
           <p class="owner">Valor de venta: ${precioVenta.toLocaleString()} OC ${cantidad > 1 ? '/ unidad' : ''}</p>
+          ${esPrincipal ? '<span class="principal-tag">Coche principal</span><br>' : ''}
           ${puedeVender
-            ? `<button class="action sell" onclick="event.stopPropagation(); abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')">Vender ${cantidad > 1 ? '1 unidad' : ''} por ${precioVenta.toLocaleString()} OC</button>`
-            : `<button class="action ghost" disabled>Mercado cerrado</button>`
+            ? `<button class="action sell" onclick="event.stopPropagation(); abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')" style="${esPrincipal ? 'margin-top:8px;' : ''}">Vender ${cantidad > 1 ? '1 unidad' : ''} por ${precioVenta.toLocaleString()} OC</button>`
+            : `<button class="action ghost" disabled style="${esPrincipal ? 'margin-top:8px;' : ''}">Mercado cerrado</button>`
           }
         </div>
       </div>`;
@@ -1464,13 +1494,17 @@ function renderMiGaraje(){
         ${misCoches.map(({coche:c}) => `<option value="${c.ID_Coche}">${c.Nombre_Coche}</option>`).join('')}
       </select>
       <button class="action buy" id="btnAceptarCochePrincipal">Aceptar</button>
-    </div>` : '';
+    </div>
+    <p class="validacion-principal ${validado ? 'ok' : 'pendiente'}">
+      ${validado ? '✅ Coche principal validado' : '❌ Todavía no has validado tu coche principal'}
+    </p>` : '';
 
   cont.innerHTML = `
     <div class="mi-garaje-ficha">
       <div class="mi-garaje-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
       <div class="mi-garaje-info">
-        <p class="name">${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
+        ${dorsal ? `<p class="dorsal">#${dorsal}</p>` : ''}
+        <p class="name">${p.Nombre_Piloto || ''} ${bandera ? `<span class="flag">${bandera}</span>` : ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
         <div class="mi-garaje-desc">
           <div class="row"><span class="lbl">ID Piloto</span><span class="val">${p.ID_Piloto || ''}</span></div>
           <div class="row"><span class="lbl">Saldo</span><span class="val">${saldo.toLocaleString()} OC</span></div>
@@ -1495,7 +1529,6 @@ function renderMiGaraje(){
   `;
 
   if(misCoches.length){
-    const idPrincipal = principalCocheId(p);
     const sel = document.getElementById('selectCochePrincipal');
     if(sel && idPrincipal) sel.value = idPrincipal;
 
