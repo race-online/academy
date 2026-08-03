@@ -46,7 +46,7 @@
     border-bottom:1px solid var(--hairline);
   }
   .topbar-inner{
-    max-width:1500px;margin:0 auto;padding:14px 20px;
+    max-width:1500px;margin:0 auto;padding:6px 20px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
   }
   .brand{display:flex;align-items:center;gap:20px;}
@@ -201,6 +201,8 @@
   }
   .pilot-topbar-info{flex:1;min-width:0;}
   .pilot-topbar-info .name{font-family:'Teko',sans-serif;font-size:20px;margin:0 0 3px;line-height:1.1;}
+  .pilot-topbar-info .dorsal{color:#f01c26;font-weight:600;}
+  .pilot-topbar-info .flag{font-size:15px;margin-left:6px;vertical-align:middle;}
   .pilot-topbar-stats{display:flex;gap:14px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);}
   .pilot-topbar-stats b{color:var(--text);}
   .pilot-card-v2 .empty-mini{padding:20px 16px;color:var(--text-dim);font-size:13px;}
@@ -217,6 +219,8 @@
     width:78px;height:78px;border-radius:50%;background:var(--panel-2) center/cover;
     border:2px solid var(--hairline);flex:none;
   }
+  #pilotoModalNombre .dorsal{color:#f01c26;font-weight:600;}
+  #pilotoModalNombre .flag{font-size:19px;margin-left:4px;vertical-align:middle;}
 
   /* Mi Garaje */
   .mi-garaje-ficha{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:20px;}
@@ -225,8 +229,8 @@
     border:2px solid var(--hairline);flex:none;
   }
   .mi-garaje-info .dorsal{
-    font-family:'Teko',sans-serif;font-weight:700;font-size:46px;line-height:1;
-    color:var(--amber);margin:0 0 2px;letter-spacing:1px;
+    font-family:'Teko',sans-serif;font-weight:600;font-size:60px;line-height:1;
+    color:#f01c26;margin:0 0 2px;letter-spacing:1px;
   }
   .mi-garaje-info .name{font-family:'Teko',sans-serif;font-size:32px;margin:0 0 10px;line-height:1;}
   .mi-garaje-info .flag{font-size:22px;margin-left:6px;vertical-align:middle;}
@@ -489,7 +493,6 @@
     .brand{flex-direction:column;align-items:center;gap:8px;text-align:center;}
     .brand-logo{height:144px;}
     .brand-text{margin-left:0;}
-    .brand-dot{display:none;}
 
     /* Menú: 01-03 en una línea, 04-06 Mi garaje en la siguiente */
     nav.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;}
@@ -509,16 +512,12 @@
     /* Calendario: una ficha de circuito por fila */
     .calendario-grid{grid-template-columns:1fr;width:100%;}
 
-    /* Resultados / Clasificación / Historial: la tabla se comprime al ancho real
-       de la pantalla (sin scroll horizontal) — el usuario hace zoom manualmente
-       para leer el detalle, tal y como se ha pedido. */
+    /* Resultados / Clasificación / Historial: la tabla se ajusta al ancho del
+       móvil dentro de su propio contenedor (scroll horizontal manual si hace falta) */
     #modalResultados .modal{width:96%;padding:16px;}
-    .table-wrap{max-width:100%;overflow-x:hidden;}
-    table{width:100%;table-layout:fixed;font-size:9.5px;}
-    thead th, tbody td{
-      padding:5px 3px;white-space:normal;word-break:break-word;
-      overflow:hidden;text-overflow:ellipsis;
-    }
+    .table-wrap{max-width:100%;}
+    table{font-size:12.5px;}
+    thead th, tbody td{padding:8px 8px;}
   }
 </style>
 </head>
@@ -530,7 +529,7 @@
       <img class="brand-logo" src="https://raw.githubusercontent.com/race-online/es/refs/heads/main/logos/logopng.webp" alt="Race Online Shop">
       <div class="brand-text">
         <h1>Race Online Shop</h1>
-        <span>Assetto Corsa Evo Academy<span class="brand-dot"> · </span><br class="brk-mobile">Economía de comunidad</span>
+        <span>Assetto Corsa Evo Academy<br>Economía de comunidad</span>
       </div>
     </div>
     <nav class="tabs" id="tabs">
@@ -757,7 +756,7 @@
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbwoWdtDnZ1QiSsBNXr5olRmYOGgfXanpQlDJNy1afhfhcL6dEUlmUFbrgqz9qnuNa2Dpw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxd03QxU2LLAs000l3uY2eWhj7D-y2q3VwYLY5QjBIojRuU-E5D0C18Xycy2wGTTyKHug/exec';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
 let cocheFilter = 'todos';
@@ -1341,6 +1340,8 @@ function renderPilotos(){
     const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
     const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
     const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
+    const dorsal = getVal(p, 'Dorsal');
+    const bandera = banderaEmoji(getVal(p, 'Nacionalidad'));
 
     const idPrincipal = principalCocheId(p);
     const principal = idPrincipal ? misCoches.find(x => String(x.coche.ID_Coche) === String(idPrincipal)) : null;
@@ -1367,7 +1368,7 @@ function renderPilotos(){
         <div class="pilot-topbar">
           <div class="pilot-avatar-sm" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
           <div class="pilot-topbar-info">
-            <p class="name">${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
+            <p class="name">${dorsal ? `<span class="dorsal">#${dorsal}</span> ` : ''}${p.Nombre_Piloto || ''} ${bandera ? `<span class="flag">${bandera}</span>` : ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
             <div class="pilot-topbar-stats">
               <span>Saldo: <b>${saldo.toLocaleString()} OC</b></span>
               <span>Garaje: <b>${totalUnidades}</b> coches</span>
@@ -1387,10 +1388,12 @@ function abrirModalPiloto(idPiloto){
   const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
   const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
   const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
+  const dorsal = getVal(p, 'Dorsal');
+  const bandera = banderaEmoji(getVal(p, 'Nacionalidad'));
   const idPrincipal = principalCocheId(p);
 
   document.getElementById('pilotoModalAvatar').style.backgroundImage = "url('" + (p.Foto_Avatar_URL || '') + "')";
-  document.getElementById('pilotoModalNombre').innerHTML = `${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}`;
+  document.getElementById('pilotoModalNombre').innerHTML = `${dorsal ? `<span class="dorsal">#${dorsal}</span> ` : ''}${p.Nombre_Piloto || ''} ${bandera ? `<span class="flag">${bandera}</span>` : ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}`;
   document.getElementById('pilotoModalStats').innerHTML = `
     <span class="stat oc">Saldo: <b>${saldo.toLocaleString()} OC</b></span>
     <span class="stat">Garaje: <b>${totalUnidades}</b> coches</span>
