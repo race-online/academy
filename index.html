@@ -23,6 +23,13 @@
     --green: #00E5C7;
     --green-dim: rgba(0, 229, 199, 0.12);
     --radius: 10px;
+    /* Fondo del "chip" donde se muestra el logo de marca de cada coche cuando se usa
+       el layout alternativo 'badge' (insignia superpuesta en la foto). El layout
+       'name' (el que está activo por defecto, ver LOGO_LAYOUT) usa fondo transparente
+       y ya no depende de esta variable. Si algún logo del layout 'badge' se ve mal
+       (p.ej. un logo blanco que "desaparece"), prueba a cambiar este valor por algo
+       como #111318 o un gris medio. */
+    --logo-chip-bg: #ffffff;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
@@ -46,7 +53,7 @@
     border-bottom:1px solid var(--hairline);
   }
   .topbar-inner{
-    max-width:1500px;margin:0 auto;padding:6px 20px;
+    max-width:1600px;margin:0 auto;padding:6px 20px;
     display:flex;align-items:center;justify-content:space-between;gap:16px;
   }
   .brand{display:flex;align-items:center;gap:20px;}
@@ -55,7 +62,7 @@
   .brand h1{font-size:26px;margin:0;line-height:1;}
   .brand span{display:block;font-size:11px;color:var(--text-dim);letter-spacing:1.5px;text-transform:uppercase;font-family:'Inter',sans-serif;}
 
-  nav.tabs{display:flex;gap:4px;flex-wrap:wrap;}
+  nav.tabs{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
   nav.tabs button{
     display:flex;align-items:center;gap:8px;
     background:transparent;border:1px solid transparent;color:var(--text-dim);
@@ -77,9 +84,25 @@
   }
   .logout-btn:hover{color:var(--danger);border-color:rgba(255,71,87,0.4);}
 
+  /* Pastilla "piloto header" — estrecha, se coloca justo a la derecha de la
+     pestaña Mi garaje dentro de nav.tabs. */
+  .piloto-header-pill{
+    display:flex;align-items:center;gap:6px;flex:none;
+    background:transparent;border:1px solid rgba(255,71,87,0.4);color:var(--text);
+    padding:5px 10px;border-radius:8px;font-size:12px;font-weight:500;
+    font-family:'Inter',sans-serif;white-space:nowrap;max-width:230px;
+  }
+  .piloto-header-avatar{
+    width:22px;height:22px;border-radius:50%;background:var(--panel-2) center/cover;
+    border:1px solid var(--hairline);flex:none;
+  }
+  .piloto-header-nombre{color:var(--text);white-space:nowrap;}
+  .piloto-header-pill .lic-tag{margin-left:0;padding:2px 6px;font-size:9px;}
+  .piloto-header-saldo{color:var(--amber);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;}
+
   .brk-mobile{display:none;}
 
-  main{max-width:1500px;margin:0 auto;padding:28px 20px 80px;}
+  main{max-width:1600px;margin:0 auto;padding:28px 20px 80px;}
   section.view{display:none;}
   section.view.active{display:block;animation:fadeIn .25s ease;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
@@ -186,6 +209,46 @@
     font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 7px;border-radius:5px;
   }
 
+  /* ============================================================
+     LOGO DE MARCA DEL COCHE — dos layouts disponibles.
+     Se activa uno u otro con la constante JS LOGO_LAYOUT ('name' | 'badge').
+     Layout 'name' (activo por defecto): fondo transparente, logo a tamaño fijo
+     30x30px junto al nombre del coche, alineado a la derecha.
+     Layout 'badge' (alternativo): insignia superpuesta en la foto con fondo
+     claro --logo-chip-bg (para que se vea bien un logo oscuro sobre foto).
+     En ambos casos, si el coche tiene "Forzar logo blanco" = Sí en la pestaña
+     CochesLogos, se aplica la clase .logo-forzado-blanco (filtro CSS) para
+     pintar el logo en blanco sobre fondo transparente.
+     ============================================================ */
+
+  /* Filtro que fuerza cualquier logo (negro/color) a blanco puro, conservando
+     la transparencia del PNG original. Se activa vía CochesLogos!R = "Sí". */
+  .logo-forzado-blanco{filter:brightness(0) invert(1);}
+
+  /* OPCIÓN 1 (por defecto): logo a la derecha del nombre del coche, sin chip de fondo */
+  .name-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .name-row .name{margin:0;flex:1;min-width:0;}
+  .brand-logo-chip{
+    flex:none;display:flex;align-items:center;justify-content:flex-end;
+    background:transparent;border-radius:0;padding:0;line-height:0;margin-left:auto;
+  }
+  .brand-logo-chip img{height:30px;width:30px;object-fit:contain;display:block;}
+  .ficha-info .name-row{align-items:flex-end;}
+  .ficha-info .brand-logo-chip{padding:0;}
+  .ficha-info .brand-logo-chip img{height:40px;width:40px;}
+
+  /* OPCIÓN 2 (alternativa): logo como insignia superpuesta en la foto,
+     abajo a la izquierda (hueco libre: número arriba-izda., categoría
+     arriba-dcha., cantidad "x2" abajo-dcha.) */
+  .brand-badge{
+    position:absolute;bottom:10px;left:10px;z-index:2;
+    background:var(--logo-chip-bg);border-radius:7px;padding:4px 8px;line-height:0;
+    box-shadow:0 2px 8px rgba(0,0,0,.35);
+  }
+  .brand-badge img{height:15px;max-width:52px;object-fit:contain;display:block;}
+  .ficha-grande .brand-badge{bottom:14px;left:18px;padding:5px 10px;}
+  .ficha-grande .brand-badge img{height:19px;max-width:68px;}
+
   /* Pilotos: rejilla de fichas rectangulares tipo car-card (~350px) */
   .pilotos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
   .pilot-card-v2{
@@ -201,8 +264,7 @@
   }
   .pilot-topbar-info{flex:1;min-width:0;}
   .pilot-topbar-info .name{font-family:'Teko',sans-serif;font-size:20px;margin:0 0 3px;line-height:1.1;}
-  .pilot-topbar-info .dorsal{color:#f01c26;font-weight:600;}
-  .pilot-topbar-info .flag{font-size:15px;margin-left:6px;vertical-align:middle;}
+  .pilot-topbar-info .flag-img{height:15px;margin-left:6px;vertical-align:middle;border-radius:2px;box-shadow:0 0 0 1px var(--hairline);}
   .pilot-topbar-stats{display:flex;gap:14px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-dim);}
   .pilot-topbar-stats b{color:var(--text);}
   .pilot-card-v2 .empty-mini{padding:20px 16px;color:var(--text-dim);font-size:13px;}
@@ -219,8 +281,6 @@
     width:78px;height:78px;border-radius:50%;background:var(--panel-2) center/cover;
     border:2px solid var(--hairline);flex:none;
   }
-  #pilotoModalNombre .dorsal{color:#f01c26;font-weight:600;}
-  #pilotoModalNombre .flag{font-size:19px;margin-left:4px;vertical-align:middle;}
 
   /* Mi Garaje */
   .mi-garaje-ficha{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:20px;}
@@ -228,12 +288,8 @@
     width:110px;height:110px;border-radius:50%;background:var(--panel-2) center/cover;
     border:2px solid var(--hairline);flex:none;
   }
-  .mi-garaje-info .dorsal{
-    font-family:'Teko',sans-serif;font-weight:600;font-size:60px;line-height:1;
-    color:#f01c26;margin:0 0 2px;letter-spacing:1px;
-  }
   .mi-garaje-info .name{font-family:'Teko',sans-serif;font-size:32px;margin:0 0 10px;line-height:1;}
-  .mi-garaje-info .flag{font-size:22px;margin-left:6px;vertical-align:middle;}
+  .mi-garaje-info .flag-img{height:22px;margin-left:6px;vertical-align:middle;border-radius:2px;box-shadow:0 0 0 1px var(--hairline);}
   .mi-garaje-desc{display:flex;flex-direction:column;gap:6px;}
   .mi-garaje-desc .row{display:flex;gap:10px;align-items:baseline;}
   .mi-garaje-desc .lbl{color:var(--text-dim);text-transform:uppercase;font-size:11px;letter-spacing:.5px;min-width:90px;}
@@ -474,6 +530,13 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   .empty-state{padding:40px 20px;text-align:center;color:var(--text-dim);grid-column:1/-1;}
 
+  /* Pie de página: aquí vive ahora el botón de cerrar sesión */
+  .site-footer{
+    max-width:1600px;margin:0 auto;padding:10px 20px 50px;
+    display:flex;justify-content:center;
+  }
+  .site-footer .logout-btn{padding:10px 26px;font-size:13px;}
+
   @media (max-width:640px){
     .topbar-inner{flex-direction:column;align-items:stretch;gap:12px;}
     nav.tabs{justify-content:space-between;}
@@ -497,7 +560,7 @@
     /* Menú: 01-03 en una línea, 04-06 Mi garaje en la siguiente */
     nav.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%;}
     nav.tabs button{flex:none;padding:8px 4px;font-size:11.5px;gap:5px;}
-    .logout-btn{grid-column:1/-1;justify-self:center;margin-top:2px;}
+    .piloto-header-pill{grid-column:1/-1;justify-self:center;margin-top:2px;max-width:100%;}
 
     /* Salto de línea del subtítulo de Concesionario y del eslogan del encabezado */
     .brk-mobile{display:inline;}
@@ -539,7 +602,12 @@
       <button class="tab-btn" data-view="clasificacion"><span class="num">04</span> Clasificación</button>
       <button class="tab-btn" data-view="historial"><span class="num">05</span> Historial</button>
       <button class="tab-btn" data-view="migaraje" id="tabMiGaraje" style="display:none;"><span class="num">06</span> Mi garaje</button>
-      <button class="logout-btn" id="btnCerrarSesion" style="display:none;">Cerrar sesión</button>
+      <div class="piloto-header-pill" id="pilotoHeaderPill" style="display:none;">
+        <div class="piloto-header-avatar" id="pilotoHeaderAvatar"></div>
+        <span class="piloto-header-nombre" id="pilotoHeaderNombre"></span>
+        <span class="lic-tag" id="pilotoHeaderLic"></span>
+        <span class="piloto-header-saldo" id="pilotoHeaderSaldo"></span>
+      </div>
     </nav>
   </div>
 </header>
@@ -564,7 +632,7 @@
       <button class="pill" data-filter="disponibles">En concesionario</button>
       <button class="pill" data-filter="agotados">Agotados</button>
     </div>
-    <div class="grid" id="gridCoches"></div>
+    <div class="grid" id="gridCoches"><div class="empty-state"><span class="spinner"></span>Cargando datos, espere…</div></div>
   </section>
 
   <section class="view" id="view-pilotos">
@@ -574,7 +642,7 @@
         <p>Saldo actual y coche principal de cada piloto de la parrilla</p>
       </div>
     </div>
-    <div class="pilotos-grid" id="listaPilotos"></div>
+    <div class="pilotos-grid" id="listaPilotos"><div class="empty-state"><span class="spinner"></span>Cargando datos, espere…</div></div>
   </section>
 
   <section class="view" id="view-migaraje">
@@ -584,7 +652,7 @@
         <p>Tu ficha personal, tus coches y tu coche principal de campeonato</p>
       </div>
     </div>
-    <div id="miGarajeContenido"></div>
+    <div id="miGarajeContenido"><div class="empty-state"><span class="spinner"></span>Cargando datos, espere…</div></div>
   </section>
 
   <section class="view" id="view-calendario">
@@ -594,7 +662,7 @@
         <p>Circuitos de la temporada · pulsa una ficha para ver los resultados</p>
       </div>
     </div>
-    <div class="calendario-grid" id="gridCalendario"></div>
+    <div class="calendario-grid" id="gridCalendario"><div class="empty-state"><span class="spinner"></span>Cargando datos, espere…</div></div>
   </section>
 
   <section class="view" id="view-clasificacion">
@@ -613,7 +681,7 @@
             <th>Espec.</th><th>Puntos</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Pen.</th>
           </tr>
         </thead>
-        <tbody id="tablaClasificacion"></tbody>
+        <tbody id="tablaClasificacion"><tr><td colspan="13" style="color:var(--text-dim);text-align:center;"><span class="spinner"></span>Cargando datos, espere…</td></tr></tbody>
       </table>
     </div>
 
@@ -632,7 +700,7 @@
             <th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>Pen.</th>
           </tr>
         </thead>
-        <tbody id="tablaClasTeam"></tbody>
+        <tbody id="tablaClasTeam"><tr><td colspan="9" style="color:var(--text-dim);text-align:center;"><span class="spinner"></span>Cargando datos, espere…</td></tr></tbody>
       </table>
     </div>
   </section>
@@ -653,12 +721,16 @@
     <div class="table-wrap">
       <table>
         <thead><tr><th>Fecha</th><th>Piloto</th><th>Tipo</th><th>Detalle</th><th>Monto</th></tr></thead>
-        <tbody id="tablaHistorial"></tbody>
+        <tbody id="tablaHistorial"><tr><td colspan="5" style="color:var(--text-dim);"><span class="spinner"></span>Cargando datos, espere…</td></tr></tbody>
       </table>
     </div>
   </section>
 
 </main>
+
+<footer class="site-footer">
+  <button class="logout-btn" id="btnCerrarSesion" style="display:none;">Cerrar sesión</button>
+</footer>
 
 <div class="overlay" id="modalComprar">
   <div class="modal modal-ficha modal-ficha-wide">
@@ -756,7 +828,7 @@
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxd03QxU2LLAs000l3uY2eWhj7D-y2q3VwYLY5QjBIojRuU-E5D0C18Xycy2wGTTyKHug/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxiNMozQ5nNutUk8FR_b0XH0OSgcs1h6OfwRFvFhICVJYB7Kj_bIr5a3UFAspxGMaKfDg/exec';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
 let cocheFilter = 'todos';
@@ -838,6 +910,7 @@ async function cargarTodo(){
     renderClasTeam();
     renderHistorial();
     if(sesion.tipo === 'piloto') renderMiGaraje();
+    actualizarPilotoHeaderPill();
     if(!sesionIniciada) prepararLogin();
   }catch(err){
     toast('No se pudieron cargar los datos: ' + err.message, 'err');
@@ -889,6 +962,48 @@ function mostrarBotonCerrarSesion(){
   document.getElementById('btnCerrarSesion').style.display = '';
 }
 
+// Abrevia el nombre de un piloto a "Inicial. Apellido(s)" para que la pastilla
+// del encabezado quede siempre estrecha y legible (ej. "Aitor Cantó" -> "A. Cantó").
+function abreviarNombre(nombre){
+  const partes = String(nombre || '').trim().split(/\s+/).filter(Boolean);
+  if(partes.length === 0) return '';
+  if(partes.length === 1) return partes[0];
+  const inicial = partes[0].charAt(0).toUpperCase();
+  const apellidos = partes.slice(1).join(' ');
+  return inicial + '. ' + apellidos;
+}
+
+// Rellena y muestra la pastilla del piloto conectado en el encabezado
+// (avatar, nombre abreviado, licencia y saldo). Se oculta para invitados
+// o si todavía no han llegado los datos del piloto.
+function actualizarPilotoHeaderPill(){
+  const pill = document.getElementById('pilotoHeaderPill');
+  if(!pill) return;
+  if(sesion.tipo !== 'piloto'){
+    pill.style.display = 'none';
+    return;
+  }
+  const p = DB.pilotos.find(pp => String(pp.ID_Piloto) === String(sesion.idPiloto));
+  if(!p){
+    pill.style.display = 'none';
+    return;
+  }
+
+  const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
+  const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
+
+  document.getElementById('pilotoHeaderAvatar').style.backgroundImage = "url('" + (p.Foto_Avatar_URL || '') + "')";
+  document.getElementById('pilotoHeaderNombre').textContent = abreviarNombre(p.Nombre_Piloto || '');
+
+  const licEl = document.getElementById('pilotoHeaderLic');
+  licEl.textContent = licencia || '';
+  licEl.style.display = licencia ? '' : 'none';
+
+  document.getElementById('pilotoHeaderSaldo').textContent = saldo.toLocaleString() + ' OC';
+
+  pill.style.display = '';
+}
+
 document.getElementById('btnLoginPiloto').addEventListener('click', async ()=>{
   const idPiloto = document.getElementById('loginPiloto').value;
   const pin = document.getElementById('loginPin').value;
@@ -910,6 +1025,7 @@ document.getElementById('btnLoginPiloto').addEventListener('click', async ()=>{
     renderCoches();
     renderPilotos();
     renderMiGaraje();
+    actualizarPilotoHeaderPill();
   }catch(err){
     toast(err.message, 'err');
   }finally{
@@ -934,6 +1050,7 @@ document.getElementById('btnCerrarSesion').addEventListener('click', ()=>{
 
   document.getElementById('tabMiGaraje').style.display = 'none';
   document.getElementById('btnCerrarSesion').style.display = 'none';
+  document.getElementById('pilotoHeaderPill').style.display = 'none';
 
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1034,24 +1151,74 @@ function catTagClass(categoria){
   return '';
 }
 
-// Convierte un código de país ISO 3166-1 alpha-2 (ej. "es", "ar", "mx") en su
-// emoji de bandera correspondiente, usando los símbolos Unicode "regional indicator".
-// No requiere ninguna imagen ni enlace externo: funciona con cualquier código de 2 letras.
-function banderaEmoji(codigoPais){
-  const cc = String(codigoPais || '').trim().toUpperCase();
-  if(cc.length !== 2 || !/^[A-Z]{2}$/.test(cc)) return '';
-  const puntos = [...cc].map(letra => 0x1F1E6 + (letra.charCodeAt(0) - 65));
-  return String.fromCodePoint(...puntos);
+// Genera un <img> con la bandera del país a partir de su código ISO 3166-1 alpha-2
+// (ej. "es", "ar", "mx"), usando flagcdn.com. A diferencia del emoji de bandera,
+// esto se ve igual en todos los sistemas operativos y navegadores (los emojis de
+// bandera no se renderizan en muchos Windows/Android/Linux y aparece el código en texto).
+// Nota: la bandera ahora SOLO se muestra en la sección "Mi Garaje" (ver renderMiGaraje).
+function banderaImgHtml(codigoPais){
+  const cc = String(codigoPais || '').trim().toLowerCase();
+  if(!/^[a-z]{2}$/.test(cc)) return '';
+  return `<img class="flag-img" src="https://flagcdn.com/w40/${cc}.png" srcset="https://flagcdn.com/w80/${cc}.png 2x" alt="${cc.toUpperCase()}" loading="lazy">`;
+}
+
+// ------------------------------------------------------------
+// LOGO DE MARCA DEL COCHE (pestaña "CochesLogos", columna A = nombre del coche,
+// columna F = URL del logo, columna R = "Forzar logo blanco")
+// ------------------------------------------------------------
+// Cambia este valor para probar las 2 opciones de layout:
+//   'name'  -> el logo se muestra a la derecha del nombre del coche (opción activa)
+//   'badge' -> el logo se muestra como una insignia superpuesta en la foto, abajo
+//              a la izquierda (opción alternativa, no compite con el nombre)
+const LOGO_LAYOUT = 'name';
+
+// El backend ya combina el logo dentro de cada coche como "Logo_Marca_URL" y el
+// flag de "forzar blanco" como "Logo_Forzar_Blanco" (boolean).
+function logoMarcaUrl(c){
+  return getVal(c, 'Logo_Marca_URL') || '';
+}
+
+// Indica si el coche tiene marcado "Sí" en CochesLogos!Forzar logo blanco (columna R).
+function logoForzarBlanco(c){
+  const val = getVal(c, 'Logo_Forzar_Blanco');
+  if(val === true) return true;
+  const s = String(val || '').trim().toLowerCase();
+  return s === 'true' || s === 'si' || s === 'sí' || s === '1';
+}
+
+// Fila de nombre del coche + logo de marca (layout 'name'). Si no hay logo o el
+// layout activo es 'badge', devuelve simplemente el <p class="name"> de siempre.
+// Si forzarBlanco es true, el logo se pinta en blanco (fondo siempre transparente).
+function nombreConLogoHtml(nombre, logoUrl, forzarBlanco, claseNombre){
+  claseNombre = claseNombre || 'name';
+  if(LOGO_LAYOUT === 'name' && logoUrl){
+    const claseImg = forzarBlanco ? 'logo-forzado-blanco' : '';
+    return `<div class="name-row"><p class="${claseNombre}">${nombre || ''}</p><span class="brand-logo-chip"><img class="${claseImg}" src="${logoUrl}" alt="Logo de marca" loading="lazy"></span></div>`;
+  }
+  return `<p class="${claseNombre}">${nombre || ''}</p>`;
+}
+
+// Insignia de marca superpuesta en la foto (layout 'badge'). Va dentro de .photo
+// o .ficha-grande, que ya tienen position:relative.
+function logoBadgeHtml(logoUrl, forzarBlanco){
+  if(LOGO_LAYOUT === 'badge' && logoUrl){
+    const claseImg = forzarBlanco ? 'logo-forzado-blanco' : '';
+    return `<div class="brand-badge"><img class="${claseImg}" src="${logoUrl}" alt="Logo de marca" loading="lazy"></div>`;
+  }
+  return '';
 }
 
 // HTML del interior de la ficha grande (foto ya se aplica como background aparte)
 function fichaGrandeHtml(c){
   const cat = c.Categoria || '';
+  const logoUrl = logoMarcaUrl(c);
+  const forzarBlanco = logoForzarBlanco(c);
   return `
     <div class="stripe"></div>
     <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
     <div class="cat-tag ${catTagClass(cat)}">${cat}</div>
-    <div class="ficha-info"><p class="name">${c.Nombre_Coche || ''}</p></div>
+    ${logoBadgeHtml(logoUrl, forzarBlanco)}
+    <div class="ficha-info">${nombreConLogoHtml(c.Nombre_Coche || '', logoUrl, forzarBlanco)}</div>
   `;
 }
 
@@ -1146,15 +1313,18 @@ function renderCoches(){
 
     // La ficha del coche siempre se puede abrir (aunque el mercado esté cerrado o no haya stock);
     // solo cambia si el botón de "Comprar" dentro de la ficha está activo o no.
+    const logoUrl = logoMarcaUrl(c);
+    const forzarBlanco = logoForzarBlanco(c);
     return `
       <div class="car-card" onclick="abrirModalComprar('${c.ID_Coche}')" style="cursor:pointer;">
         <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
           <div class="stripe"></div>
           <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
           <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
+          ${logoBadgeHtml(logoUrl, forzarBlanco)}
         </div>
         <div class="body">
-          <p class="name">${c.Nombre_Coche || ''}</p>
+          ${nombreConLogoHtml(c.Nombre_Coche || '', logoUrl, forzarBlanco)}
           <p class="owner ${ownerClass}">${ownerLine}</p>
           <div class="price-row">
             <span class="label">Precio</span>
@@ -1340,8 +1510,6 @@ function renderPilotos(){
     const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
     const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
     const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
-    const dorsal = getVal(p, 'Dorsal');
-    const bandera = banderaEmoji(getVal(p, 'Nacionalidad'));
 
     const idPrincipal = principalCocheId(p);
     const principal = idPrincipal ? misCoches.find(x => String(x.coche.ID_Coche) === String(idPrincipal)) : null;
@@ -1349,15 +1517,18 @@ function renderPilotos(){
     const cocheHtml = principal ? (() => {
       const c = principal.coche;
       const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
+      const logoUrl = logoMarcaUrl(c);
+      const forzarBlanco = logoForzarBlanco(c);
       return `
         <div class="car-card-mini">
           <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
             <div class="stripe"></div>
             <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
             <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
+            ${logoBadgeHtml(logoUrl, forzarBlanco)}
           </div>
           <div class="body">
-            <p class="name">${c.Nombre_Coche || ''}</p>
+            ${nombreConLogoHtml(c.Nombre_Coche || '', logoUrl, forzarBlanco)}
             <p class="owner">Coche principal · Valor de venta: ${precioVenta.toLocaleString()} OC</p>
           </div>
         </div>`;
@@ -1368,7 +1539,7 @@ function renderPilotos(){
         <div class="pilot-topbar">
           <div class="pilot-avatar-sm" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
           <div class="pilot-topbar-info">
-            <p class="name">${dorsal ? `<span class="dorsal">#${dorsal}</span> ` : ''}${p.Nombre_Piloto || ''} ${bandera ? `<span class="flag">${bandera}</span>` : ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
+            <p class="name">${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
             <div class="pilot-topbar-stats">
               <span>Saldo: <b>${saldo.toLocaleString()} OC</b></span>
               <span>Garaje: <b>${totalUnidades}</b> coches</span>
@@ -1388,12 +1559,10 @@ function abrirModalPiloto(idPiloto){
   const totalUnidades = misCoches.reduce((s,x)=> s + x.cantidad, 0);
   const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
   const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
-  const dorsal = getVal(p, 'Dorsal');
-  const bandera = banderaEmoji(getVal(p, 'Nacionalidad'));
   const idPrincipal = principalCocheId(p);
 
   document.getElementById('pilotoModalAvatar').style.backgroundImage = "url('" + (p.Foto_Avatar_URL || '') + "')";
-  document.getElementById('pilotoModalNombre').innerHTML = `${dorsal ? `<span class="dorsal">#${dorsal}</span> ` : ''}${p.Nombre_Piloto || ''} ${bandera ? `<span class="flag">${bandera}</span>` : ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}`;
+  document.getElementById('pilotoModalNombre').innerHTML = `${p.Nombre_Piloto || ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}`;
   document.getElementById('pilotoModalStats').innerHTML = `
     <span class="stat oc">Saldo: <b>${saldo.toLocaleString()} OC</b></span>
     <span class="stat">Garaje: <b>${totalUnidades}</b> coches</span>
@@ -1418,6 +1587,8 @@ function abrirModalPiloto(idPiloto){
     garajeGrid.innerHTML = misCoches.map(({coche:c, cantidad})=>{
       const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
       const esPrincipal = String(c.ID_Coche) === String(idPrincipal);
+      const logoUrl = logoMarcaUrl(c);
+      const forzarBlanco = logoForzarBlanco(c);
       return `
         <div class="car-card">
           <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
@@ -1425,9 +1596,10 @@ function abrirModalPiloto(idPiloto){
             <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
             <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
             ${cantidad > 1 ? `<div class="qty-badge">x${cantidad}</div>` : ''}
+            ${logoBadgeHtml(logoUrl, forzarBlanco)}
           </div>
           <div class="body">
-            <p class="name">${c.Nombre_Coche || ''}</p>
+            ${nombreConLogoHtml(c.Nombre_Coche || '', logoUrl, forzarBlanco)}
             <p class="owner">Valor de venta: ${precioVenta.toLocaleString()} OC ${cantidad > 1 ? '/ unidad' : ''}</p>
             ${esPrincipal ? '<span class="principal-tag">Coche principal</span>' : ''}
           </div>
@@ -1455,8 +1627,7 @@ function renderMiGaraje(){
   const saldo = Number(p.Saldo_OC ?? p.Saldo_EC ?? 0);
   const licencia = getVal(p, 'Licencia') || getVal(p, 'Lic.') || getVal(p, 'Lic');
   const equipo = getVal(p, 'Equipo');
-  const dorsal = getVal(p, 'Dorsal');
-  const bandera = banderaEmoji(getVal(p, 'Nacionalidad'));
+  const bandera = banderaImgHtml(getVal(p, 'Nacionalidad')); // La bandera solo se muestra aquí, en "Mi Garaje"
   const idPrincipal = principalCocheId(p);
   const validado = String(getVal(p, 'Coche_Principal') || '').trim() !== '';
 
@@ -1470,6 +1641,8 @@ function renderMiGaraje(){
     const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
     const puedeVender = !mercadoBloqueado;
     const esPrincipal = String(c.ID_Coche) === String(idPrincipal);
+    const logoUrl = logoMarcaUrl(c);
+    const forzarBlanco = logoForzarBlanco(c);
     return `
       <div class="car-card" ${puedeVender ? `onclick="abrirModalVender('${c.ID_Coche}', '${p.ID_Piloto}')" style="cursor:pointer;"` : ''}>
         <div class="photo" style="background-image:url('${c.Imagen_URL || ''}')">
@@ -1477,9 +1650,10 @@ function renderMiGaraje(){
           <div class="number">${String(c.ID_Coche || '').slice(-2)}</div>
           <div class="cat-tag ${catTagClass(c.Categoria)}">${c.Categoria || ''}</div>
           ${cantidad > 1 ? `<div class="qty-badge">x${cantidad}</div>` : ''}
+          ${logoBadgeHtml(logoUrl, forzarBlanco)}
         </div>
         <div class="body">
-          <p class="name">${c.Nombre_Coche || ''}</p>
+          ${nombreConLogoHtml(c.Nombre_Coche || '', logoUrl, forzarBlanco)}
           <p class="owner">Valor de venta: ${precioVenta.toLocaleString()} OC ${cantidad > 1 ? '/ unidad' : ''}</p>
           ${esPrincipal ? '<span class="principal-tag">Coche principal</span><br>' : ''}
           ${puedeVender
@@ -1506,8 +1680,7 @@ function renderMiGaraje(){
     <div class="mi-garaje-ficha">
       <div class="mi-garaje-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
       <div class="mi-garaje-info">
-        ${dorsal ? `<p class="dorsal">#${dorsal}</p>` : ''}
-        <p class="name">${p.Nombre_Piloto || ''} ${bandera ? `<span class="flag">${bandera}</span>` : ''} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
+        <p class="name">${p.Nombre_Piloto || ''} ${bandera} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
         <div class="mi-garaje-desc">
           <div class="row"><span class="lbl">ID Piloto</span><span class="val">${p.ID_Piloto || ''}</span></div>
           <div class="row"><span class="lbl">Saldo</span><span class="val">${saldo.toLocaleString()} OC</span></div>
