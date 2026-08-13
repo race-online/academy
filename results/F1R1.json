@@ -1,0 +1,380 @@
+{
+ "season": "RPM COMPETICIONES 2",
+ "event": "Race Weekend",
+ "session": "Race",
+ "track": "Imola",
+ "layout": "GP Race",
+ "weather_type": "GameModeSelectionWeatherType_CLEAR",
+ "hour": 12,
+ "min": 0,
+ "drivers": [
+  {
+   "driver_id": {
+    "a": "5310168239228727703",
+    "b": "4601953103695163308"
+   },
+   "is_current_driver": false,
+   "position": 0,
+   "driver_name": "Cris",
+   "driver_surname": "Viru",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 19,
+   "laps": 17,
+   "splits": [
+    "00:28.218",
+    "00:41.793",
+    "00:36.693"
+   ],
+   "best_lap": "01:46.704",
+   "total_time": "30:25.576",
+   "diff_first": "",
+   "diff_previous": "",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "5644869099206054756",
+    "b": "1830733121211331512"
+   },
+   "is_current_driver": false,
+   "position": 1,
+   "driver_name": "Xevi",
+   "driver_surname": "Cardús",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 93,
+   "laps": 17,
+   "splits": [
+    "00:28.053",
+    "00:41.748",
+    "00:36.732"
+   ],
+   "best_lap": "01:46.533",
+   "total_time": "30:30.723",
+   "diff_first": "00:05.147",
+   "diff_previous": "00:05.147",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "4696404506696272269",
+    "b": "6471534087732603008"
+   },
+   "is_current_driver": false,
+   "position": 2,
+   "driver_name": "Eduardo",
+   "driver_surname": "Navarro",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 928,
+   "laps": 17,
+   "splits": [
+    "00:28.608",
+    "00:42.012",
+    "00:37.068"
+   ],
+   "best_lap": "01:47.688",
+   "total_time": "31:00.112",
+   "diff_first": "00:34.536",
+   "diff_previous": "00:29.389",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "4907757122401234412",
+    "b": "14915504708668035487"
+   },
+   "is_current_driver": false,
+   "position": 3,
+   "driver_name": "Peter",
+   "driver_surname": "urrielu",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 69,
+   "laps": 17,
+   "splits": [
+    "00:28.833",
+    "00:42.177",
+    "00:37.233"
+   ],
+   "best_lap": "01:48.243",
+   "total_time": "31:00.213",
+   "diff_first": "00:34.637",
+   "diff_previous": "00:00.101",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "+5.0s",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "5445696713456095096",
+    "b": "17045810912019018164"
+   },
+   "is_current_driver": false,
+   "position": 4,
+   "driver_name": "Daniel",
+   "driver_surname": "Contreras",
+   "driver_nation": "VEN",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 6,
+   "laps": 17,
+   "splits": [
+    "00:28.734",
+    "00:42.054",
+    "00:36.972"
+   ],
+   "best_lap": "01:47.760",
+   "total_time": "31:01.295",
+   "diff_first": "00:35.719",
+   "diff_previous": "00:01.082",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "4658251085923469065",
+    "b": "6821467126081024904"
+   },
+   "is_current_driver": false,
+   "position": 5,
+   "driver_name": "Antonio",
+   "driver_surname": "Martínez",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 18,
+   "laps": 17,
+   "splits": [
+    "00:29.475",
+    "00:42.792",
+    "00:37.614"
+   ],
+   "best_lap": "01:49.881",
+   "total_time": "31:38.160",
+   "diff_first": "01:12.584",
+   "diff_previous": "00:36.865",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "4900159856239802459",
+    "b": "12245221330712387235"
+   },
+   "is_current_driver": false,
+   "position": 6,
+   "driver_name": "G",
+   "driver_surname": "Gerard",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 7,
+   "laps": 17,
+   "splits": [
+    "00:28.711",
+    "00:42.468",
+    "00:37.403"
+   ],
+   "best_lap": "01:48.582",
+   "total_time": "31:38.554",
+   "diff_first": "01:12.978",
+   "diff_previous": "00:00.394",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "5025169292895601078",
+    "b": "10160247832309601434"
+   },
+   "is_current_driver": false,
+   "position": 7,
+   "driver_name": "CHUS",
+   "driver_surname": "ZGZ",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 60,
+   "laps": 17,
+   "splits": [
+    "00:28.956",
+    "00:42.882",
+    "00:38.016"
+   ],
+   "best_lap": "01:49.854",
+   "total_time": "31:45.690",
+   "diff_first": "01:20.114",
+   "diff_previous": "00:07.136",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "+5.0s",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "5324875195031025489",
+    "b": "383011670880130217"
+   },
+   "is_current_driver": false,
+   "position": 8,
+   "driver_name": "THX-",
+   "driver_surname": "ZURI",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 5,
+   "laps": 17,
+   "splits": [
+    "00:28.980",
+    "00:42.891",
+    "00:37.257"
+   ],
+   "best_lap": "01:49.128",
+   "total_time": "31:51.934",
+   "diff_first": "01:26.358",
+   "diff_previous": "00:06.244",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "5471810836502186719",
+    "b": "1388784092213213857"
+   },
+   "is_current_driver": false,
+   "position": 9,
+   "driver_name": "Juan",
+   "driver_surname": "Ramirez",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 4,
+   "laps": 16,
+   "splits": [
+    "00:29.314",
+    "00:42.585",
+    "00:37.833"
+   ],
+   "best_lap": "01:49.732",
+   "total_time": "31:42.721",
+   "diff_first": "1 LAP",
+   "diff_previous": "",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "DT",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  },
+  {
+   "driver_id": {
+    "a": "4696678737028844512",
+    "b": "18020899853925810312"
+   },
+   "is_current_driver": false,
+   "position": 10,
+   "driver_name": "JAVI ",
+   "driver_surname": "HIDALGO",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 8,
+   "laps": 16,
+   "splits": [],
+   "best_lap": "",
+   "total_time": "30:26.674",
+   "diff_first": "1 LAP",
+   "diff_previous": "",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": true
+  },
+  {
+   "driver_id": {
+    "a": "5335786406513024707",
+    "b": "5814344662959731612"
+   },
+   "is_current_driver": false,
+   "position": 11,
+   "driver_name": "Albert",
+   "driver_surname": "casas",
+   "driver_nation": "ESP",
+   "team": "",
+   "car_brand": "Porsche",
+   "car_name": "Porsche 718 Cayman GT4 Clubsport",
+   "car_number": 10,
+   "laps": 16,
+   "splits": [
+    "00:28.656",
+    "00:42.558",
+    "00:37.020"
+   ],
+   "best_lap": "01:48.234",
+   "total_time": "30:32.229",
+   "diff_first": "1 LAP",
+   "diff_previous": "00:05.555",
+   "num_pits": 0,
+   "penalties": [],
+   "high_penalty": "",
+   "ballast": 0,
+   "restrictor": 0,
+   "has_best_lap": false
+  }
+ ]
+}
