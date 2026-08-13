@@ -219,6 +219,9 @@
      En ambos casos, si el coche tiene "Forzar logo blanco" = Sí en la pestaña
      CochesLogos, se aplica la clase .logo-forzado-blanco (filtro CSS) para
      pintar el logo en blanco sobre fondo transparente.
+     Esta misma clase .logo-forzado-blanco se reutiliza también en los logos de
+     "Marca" que aparecen en Clasificación (04) y en el modal de Resultados del
+     Calendario — ver marcaLogoHtml() más abajo en el <script>.
      ============================================================ */
 
   /* Filtro que fuerza cualquier logo (negro/color) a blanco puro, conservando
@@ -839,9 +842,9 @@
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxiNMozQ5nNutUk8FR_b0XH0OSgcs1h6OfwRFvFhICVJYB7Kj_bIr5a3UFAspxGMaKfDg/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyfxvzCMrID28Zz2ceTJcZaqEZfmenKjeWk2-EQwGAXPqO8e2fV4IuwoE88mXOf_Z-YPQ/exec';
 
-let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [] };
+let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [], logosForzarBlancoPorUrl: {} };
 let cocheFilter = 'todos';
 let cocheCategoriaFilter = 'todas';
 let historialFilter = 'TODOS';
@@ -1123,6 +1126,33 @@ async function iniciar(){
   }
 
   await cargarTodo();
+}
+
+// Aplica al instante en memoria (DB) el resultado de una compra/venta, sin volver a
+// pedir todos los datos del Sheet. Antes, tras comprar o vender, se llamaba a
+// cargarTodo() — que relee TODAS las hojas del Sheet en el backend — y por eso tardaba
+// varios segundos en reflejarse el cambio. Ahora comprarCoche_/venderCoche_ devuelven
+// ya el piloto y el coche actualizados en la propia respuesta, así que basta con
+// "parchear" esos dos objetos dentro de DB y repintar solo las vistas afectadas.
+function aplicarActualizacionLocal_(res){
+  if(res.piloto){
+    const idx = DB.pilotos.findIndex(p => String(p.ID_Piloto) === String(res.piloto.ID_Piloto));
+    if(idx !== -1) DB.pilotos[idx] = Object.assign({}, DB.pilotos[idx], res.piloto);
+  }
+  if(res.coche){
+    const idx = DB.coches.findIndex(c => String(c.ID_Coche) === String(res.coche.ID_Coche));
+    if(idx !== -1) DB.coches[idx] = Object.assign({}, DB.coches[idx], res.coche);
+  }
+  if(res.historial){
+    if(!Array.isArray(DB.historial)) DB.historial = [];
+    DB.historial.push(res.historial);
+  }
+
+  renderCoches();
+  renderPilotos();
+  if(sesion.tipo === 'piloto') renderMiGaraje();
+  renderHistorial();
+  actualizarPilotoHeaderPill();
 }
 
 function poblarCategorias(){
@@ -1441,7 +1471,7 @@ document.getElementById('btnConfirmarCompra').addEventListener('click', async ()
     const res = await apiPost({ action:'comprarCoche', idPiloto: sesion.idPiloto, pin: sesion.pin, idCoche: cocheSeleccionadoId });
     toast(res.message || '¡Compra realizada con éxito!', 'ok');
     cerrarModal('modalComprar');
-    await cargarTodo();
+    aplicarActualizacionLocal_(res);
   }catch(err){
     toast(err.message, 'err');
   }finally{
@@ -1484,7 +1514,7 @@ document.getElementById('btnConfirmarVenta').addEventListener('click', async ()=
     const res = await apiPost({ action:'venderCoche', idPiloto: ventaContext.idPiloto, pin: sesion.pin, idCoche: ventaContext.idCoche });
     toast(res.message || 'Coche vendido con éxito.', 'ok');
     cerrarModal('modalVender');
-    await cargarTodo();
+    aplicarActualizacionLocal_(res);
   }catch(err){
     toast(err.message, 'err');
   }finally{
@@ -1817,6 +1847,20 @@ function renderPodioHtml(ronda){
     </div>`).join('');
 }
 
+// Pinta el logo de "Marca" (usado en Clasificación y en Resultados por ronda) como
+// <img> si el valor es una URL, aplicando el "forzado a blanco" si esa URL exacta
+// está marcada como tal en CochesLogos!R (llega ya calculado en DB.logosForzarBlancoPorUrl).
+// Si el valor no es una URL, se devuelve tal cual (texto plano, comportamiento de siempre).
+function marcaLogoHtml(valorMarca){
+  const val = String(valorMarca || '').trim();
+  if(!val) return '';
+  const esUrl = val.startsWith('http://') || val.startsWith('https://') || val.startsWith('data:image');
+  if(!esUrl) return val;
+  const forzarBlanco = !!(DB.logosForzarBlancoPorUrl && DB.logosForzarBlancoPorUrl[val]);
+  const claseImg = forzarBlanco ? 'logo-forzado-blanco' : '';
+  return `<img src="${val}" alt="Marca" class="${claseImg}" style="height:24px; max-width:60px; object-fit:contain; vertical-align:middle;">`;
+}
+
 function abrirModalResultados(ronda){
   const item = (DB.calendario || []).find(c => String(getVal(c, 'Ronda')) === String(ronda));
   const circuito = item ? getVal(item, 'Circuito') : '';
@@ -1844,7 +1888,7 @@ function abrirModalResultados(ronda){
         <td>${getVal(r, 'Piloto')}</td>
         <td>${getVal(r, 'Lic.')}</td>
         <td>${getVal(r, 'Equipo')}</td>
-        <td>${getVal(r, 'Marca')}</td>
+        <td>${marcaLogoHtml(getVal(r, 'Marca'))}</td>
         <td>${getVal(r, 'Espec.')}</td>
         <td>${getVal(r, 'Vueltas')}</td>
         <td class="mono">${getVal(r, 'Tiempo')}</td>
@@ -1896,14 +1940,9 @@ function renderClasificacion(){
   tbody.innerHTML = agrupado.map(({item:c, posClase})=>{
     const posBadgeClass = posClase===1 ? 'p1' : (posClase===2 ? 'p2' : (posClase===3 ? 'p3' : ''));
     const pen = getVal(c, 'Pen.');
-    
-    const valMarca = String(getVal(c, 'Marca') || '').trim();
-    let marcaHtml = valMarca;
 
-    if (valMarca.startsWith('http://') || valMarca.startsWith('https://') || valMarca.startsWith('data:image')) {
-      marcaHtml = `<img src="${valMarca}" alt="Marca" style="height:24px; max-width:60px; object-fit:contain; vertical-align:middle;">`;
-    }
-    
+    const marcaHtml = marcaLogoHtml(getVal(c, 'Marca'));
+
     return `
     <tr>
       <td><span class="pos-badge ${posBadgeClass}">${posClase}</span></td>
