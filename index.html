@@ -842,7 +842,7 @@
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyfxvzCMrID28Zz2ceTJcZaqEZfmenKjeWk2-EQwGAXPqO8e2fV4IuwoE88mXOf_Z-YPQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbx23LJXHV6G-sYtbe6ky9qAbPHTuo35fq8Rd9EcoXyk3-cPWEXyTMOP9Uc6e50y1FsLjA/exec';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [], logosForzarBlancoPorUrl: {} };
 let cocheFilter = 'todos';
@@ -1331,6 +1331,38 @@ function nombrePiloto(id){
   return p ? p.Nombre_Piloto : id;
 }
 
+// ------------------------------------------------------------
+// ESTADÍSTICAS DE PILOTO E HISTORIAL DE CARRERAS (Sheet externo "Resultados")
+// ------------------------------------------------------------
+// El backend ya trae DB.estadisticasPilotos y DB.historialCarreras (ver
+// construirPayloadDatos_ en code.gs). El cruce con el piloto se hace por Steam id
+// (Pilotos!Player_id, columna S) en vez de por nombre, porque el nombre puede
+// cambiar pero el Steam id es estable.
+function steamIdDePiloto(piloto){
+  return String(getVal(piloto, 'Player_id') || '').trim();
+}
+
+// Devuelve el objeto { Carreras, Victorias, Podios, Top5, Poles, Campeonatos } del
+// piloto, o null si no hay Steam id o no se encuentra ninguna fila que coincida.
+function estadisticasDePiloto(piloto){
+  const steamId = steamIdDePiloto(piloto);
+  if(!steamId || !Array.isArray(DB.estadisticasPilotos)) return null;
+  return DB.estadisticasPilotos.find(e => String(getVal(e, 'SteamID')).trim() === steamId) || null;
+}
+
+// Devuelve las carreras del historial de resultados en las que aparece el piloto
+// (cruzando por Steam id), de más reciente a más antigua. Si se indica "limite",
+// recorta la lista a ese número de filas.
+function carrerasDePiloto(piloto, limite){
+  const steamId = steamIdDePiloto(piloto);
+  if(!steamId || !Array.isArray(DB.historialCarreras)) return [];
+  const lista = DB.historialCarreras
+    .filter(h => String(getVal(h, 'SteamID')).trim() === steamId)
+    .slice()
+    .reverse();
+  return limite ? lista.slice(0, limite) : lista;
+}
+
 function renderCoches(){
   const grid = document.getElementById('gridCoches');
   if (!Array.isArray(DB.coches)) return;
@@ -1697,11 +1729,15 @@ function renderMiGaraje(){
   const idPrincipal = principalCocheId(p);
   const validado = String(getVal(p, 'Coche_Principal') || '').trim() !== '';
 
-  const campeonatos = getVal(p, 'Campeonatos') || 0;
-  const victorias = getVal(p, 'Victorias') || 0;
-  const podios = getVal(p, 'Podios') || 0;
-  const vueltaR = getVal(p, 'Vuelta R.') || 0;
-  const poles = getVal(p, 'Poles') || 0;
+  // Estadísticas de carrera (Sheet externo "Resultados", pestaña "Estadisticas"),
+  // cruzadas por Steam id (Pilotos!Player_id) en vez de por nombre.
+  const stats = estadisticasDePiloto(p) || {};
+  const carrerasJugadas = stats.Carreras || 0;
+  const victorias = stats.Victorias || 0;
+  const podios = stats.Podios || 0;
+  const top5 = stats.Top5 || 0;
+  const poles = stats.Poles || 0;
+  const campeonatos = stats.Campeonatos || 0;
 
   const cochesHtml = misCoches.length ? misCoches.map(({coche:c, cantidad})=>{
     const precioVenta = Number(c.Precio_Venta_OC ?? c.Precio_Venta_EC ?? 0);
@@ -1742,6 +1778,38 @@ function renderMiGaraje(){
       ${validado ? '✅ Coche principal validado' : '❌ Todavía no has validado tu coche principal'}
     </p>` : '';
 
+  // Últimas carreras del piloto (Sheet externo "Resultados", pestaña "Historial"),
+  // cruzadas por Steam id. Se muestran las 10 más recientes.
+  const ultimasCarreras = carrerasDePiloto(p, 10);
+  const ultimasCarrerasHtml = ultimasCarreras.length ? `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Fase</th><th>Ronda</th><th>Circuito</th>
+            <th>Marca</th><th>Specs</th><th>Posición</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${ultimasCarreras.map(h => {
+            const pos = getVal(h, 'Posicion');
+            const posNum = Number(pos);
+            const posBadgeClass = posNum === 1 ? 'p1' : (posNum === 2 ? 'p2' : (posNum === 3 ? 'p3' : ''));
+            return `
+            <tr>
+              <td class="mono" style="color:var(--text-dim);font-size:12.5px;">${getVal(h, 'Fecha')}</td>
+              <td>${getVal(h, 'Fase')}</td>
+              <td>${getVal(h, 'Ronda')}</td>
+              <td>${getVal(h, 'Circuito')}</td>
+              <td style="text-align:center;">${marcaLogoHtml(getVal(h, 'Logo'))}</td>
+              <td>${getVal(h, 'Specs')}</td>
+              <td><span class="pos-badge ${posBadgeClass}">${pos || ''}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>` : '<div class="empty-state">Todavía no hay carreras registradas para este piloto.</div>';
+
   cont.innerHTML = `
     <div class="mi-garaje-ficha">
       <div class="mi-garaje-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
@@ -1755,11 +1823,17 @@ function renderMiGaraje(){
       </div>
     </div>
     <div class="pilot-stats-mini" id="miGarajeStatBoxes">
-      <div class="stat-box"><span class="emoji">👑</span><span class="val">${campeonatos}</span><span class="lbl">Camp.</span></div>
+      <div class="stat-box"><span class="emoji">🏁</span><span class="val">${carrerasJugadas}</span><span class="lbl">Carreras</span></div>
       <div class="stat-box"><span class="emoji">🏆</span><span class="val">${victorias}</span><span class="lbl">Victorias</span></div>
       <div class="stat-box"><span class="emoji">🥉</span><span class="val">${podios}</span><span class="lbl">Podios</span></div>
-      <div class="stat-box"><span class="emoji">⚡</span><span class="val">${vueltaR}</span><span class="lbl">Vuelta R.</span></div>
+      <div class="stat-box"><span class="emoji">⭐</span><span class="val">${top5}</span><span class="lbl">Top5</span></div>
       <div class="stat-box"><span class="emoji">🎯</span><span class="val">${poles}</span><span class="lbl">Poles</span></div>
+      <div class="stat-box"><span class="emoji">👑</span><span class="val">${campeonatos}</span><span class="lbl">Camp.</span></div>
+    </div>
+    <div class="checkered-divider"></div>
+    <div class="mi-garaje-seccion">
+      <h3>Últimas carreras</h3>
+      ${ultimasCarrerasHtml}
     </div>
     <div class="checkered-divider"></div>
     <div class="mi-garaje-seccion">
@@ -1873,17 +1947,20 @@ function abrirModalResultados(ronda){
   const key = 'r' + ronda;
   const resultados = Array.isArray(DB[key]) ? DB[key] : [];
 
-  if(resultados.length === 0){
+  // Se agrupa por "Clase" (columna B de la hoja R1/R2/R3/R4) y se reinicia la
+  // numeración de posiciones (1,2,3…) dentro de cada clase, igual que en la
+  // Clasificación general (ver agruparPorClase_).
+  const agrupado = agruparPorClase_(resultados);
+
+  if(agrupado.length === 0){
     tbody.innerHTML = '<tr><td colspan="11" style="color:var(--text-dim);">Todavía no hay resultados para esta carrera.</td></tr>';
   } else {
-    tbody.innerHTML = resultados.map((r, i) => {
-      const pos = getVal(r, 'Posicion') || (i+1);
-      const posNum = Number(pos);
-      const posBadgeClass = posNum === 1 ? 'p1' : (posNum === 2 ? 'p2' : (posNum === 3 ? 'p3' : ''));
+    tbody.innerHTML = agrupado.map(({item:r, posClase}) => {
+      const posBadgeClass = posClase === 1 ? 'p1' : (posClase === 2 ? 'p2' : (posClase === 3 ? 'p3' : ''));
 
       return `
       <tr>
-        <td><span class="pos-badge ${posBadgeClass}">${pos}</span></td>
+        <td><span class="pos-badge ${posBadgeClass}">${posClase}</span></td>
         <td><span class="class-tag">${getVal(r, 'Clase')}</span></td>
         <td>${getVal(r, 'Piloto')}</td>
         <td>${getVal(r, 'Lic.')}</td>
