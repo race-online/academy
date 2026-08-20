@@ -843,7 +843,8 @@
 <div id="toasts"></div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbynwrqSaP8JE-SLrNzplV-RCMydqvRk5bwKoUGb3UpVUxJpldqdd29DCQsVlX7pCBNY/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbx23LJXHV6G-sYtbe6ky9qAbPHTuo35fq8Rd9EcoXyk3-cPWEXyTMOP9Uc6e50y1FsLjA/exec';
+const STATIC_DATA_URL = 'https://cdn.jsdelivr.net/gh/race-online/academy@main/data/race-data.json';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [], logosForzarBlancoPorUrl: {}, logosForzarBlancoCarreras: {} };
 let cocheFilter = 'todos';
@@ -868,17 +869,19 @@ function getVal(obj, keyBase) {
 }
 
 async function apiGet(){
+  try{
+    const res = await fetch(STATIC_DATA_URL, { cache: 'no-store' });
+    if(res.ok){
+      const json = await res.json();
+      if(json && json.ok) return json.data;
+    }
+  }catch(err){
+    // Sigue con el respaldo de abajo.
+  }
   const res = await fetch(API_URL);
   const json = await res.json();
   if(!json.ok) throw new Error(json.error || 'Error al cargar datos');
   return json.data;
-}
-
-async function apiGetAction(action){
-  const res = await fetch(API_URL + '?action=' + encodeURIComponent(action));
-  const json = await res.json();
-  if(!json.ok) throw new Error(json.error || 'Error al cargar datos');
-  return json;
 }
 
 async function apiPost(payload){
@@ -957,20 +960,10 @@ async function cargarTodo(){
   }
 }
 
-// Pinta el login al instante con una lista ligera de pilotos (solo ID + nombre),
-// sin esperar a que se lean el resto de hojas del Sheet. El resto de datos
-// (coches, calendario, clasificación, historial…) se cargan en paralelo con cargarTodo().
-async function prepararLoginRapido(){
+function mostrarLoginConCarga(){
   const sel = document.getElementById('loginPiloto');
   sel.innerHTML = '<option>Cargando pilotos…</option>';
   document.getElementById('modalLogin').classList.add('show');
-  try{
-    const res = await apiGetAction('pilotosLogin');
-    const pilotos = res.pilotos || [];
-    sel.innerHTML = pilotos.map(p => `<option value="${p.ID_Piloto}">${p.Nombre_Piloto}</option>`).join('');
-  }catch(err){
-    sel.innerHTML = '<option value="">No se pudo cargar la lista de pilotos</option>';
-  }
 }
 
 // Repuebla el desplegable de login con la lista completa una vez han llegado
@@ -1099,7 +1092,7 @@ document.getElementById('btnCerrarSesion').addEventListener('click', ()=>{
 
   renderCoches();
   renderPilotos();
-  prepararLoginRapido();
+  mostrarLoginConCarga();
 });
 
 // Arranque de la web: si hay una sesión guardada en este navegador (mientras la
@@ -1123,7 +1116,7 @@ async function iniciar(){
   }
 
   if(!sesionIniciada){
-    prepararLoginRapido();
+    mostrarLoginConCarga();
   }
 
   await cargarTodo();
@@ -1639,7 +1632,7 @@ function renderPilotos(){
             <p class="owner">Coche principal · Valor de venta: ${precioVenta.toLocaleString()} OC</p>
           </div>
         </div>`;
-    })() : `<img class="no-car-img" src="https://raw.githubusercontent.com/race-online/academy/refs/heads/main/coches/sincoche.jpg" alt="Sin coche">`;
+    })() : `<img class="no-car-img" src="https://i.ibb.co/4wHwbNFq/sincoche.jpg" alt="Sin coche">`;
 
     return `
       <div class="pilot-card-v2" onclick="abrirModalPiloto('${p.ID_Piloto}')">
