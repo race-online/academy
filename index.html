@@ -844,7 +844,7 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbx23LJXHV6G-sYtbe6ky9qAbPHTuo35fq8Rd9EcoXyk3-cPWEXyTMOP9Uc6e50y1FsLjA/exec';
-const STATIC_DATA_URL = 'https://cdn.jsdelivr.net/gh/race-online/academy@main/data/race-data.json';
+const STATIC_DATA_URL = 'https://cdn.jsdelivr.net/gh/OWNER/REPO@BRANCH/data/race-data.json';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [], logosForzarBlancoPorUrl: {}, logosForzarBlancoCarreras: {} };
 let cocheFilter = 'todos';
@@ -955,8 +955,45 @@ async function cargarTodo(){
     if(sesion.tipo === 'piloto') renderMiGaraje();
     actualizarPilotoHeaderPill();
     if(!sesionIniciada) prepararLogin();
+    revalidarEnSegundoPlano(); // sin await: corre en paralelo, no retrasa la carga rápida
   }catch(err){
     toast('No se pudieron cargar los datos: ' + err.message, 'err');
+  }
+}
+
+// Comprueba en segundo plano si el JSON estático de jsDelivr está desactualizado,
+// comparando su "version" contra la versión real que tiene el backend ahora mismo
+// (consulta ligerísima, no lee el Sheet). Si hay diferencia, se piden los datos
+// en vivo y se repinta la web con lo actualizado — sin bloquear la carga inicial.
+async function revalidarEnSegundoPlano(){
+  try{
+    const resV = await fetch(API_URL + '?action=version');
+    const jsonV = await resV.json();
+    if(!jsonV || !jsonV.ok) return;
+
+    const versionReal = String(jsonV.version || '');
+    const versionActual = String(DB.version || '');
+    if(!versionReal || versionReal === versionActual) return; // ya está al día
+
+    const resLive = await fetch(API_URL);
+    const jsonLive = await resLive.json();
+    if(!jsonLive.ok) return;
+
+    DB = jsonLive.data;
+    mercadoBloqueado = !!DB.mercadoBloqueado;
+    actualizarEstadoMercado();
+    poblarCategorias();
+    renderCoches();
+    renderPilotos();
+    renderCalendario();
+    renderClasificacion();
+    renderClasTeam();
+    renderHistorial();
+    if(sesion.tipo === 'piloto') renderMiGaraje();
+    actualizarPilotoHeaderPill();
+  }catch(err){
+    // Si falla la revalidación, mejor dejar en pantalla lo que ya había
+    // (aunque esté algo desactualizado) que romper la web.
   }
 }
 
@@ -967,8 +1004,7 @@ function mostrarLoginConCarga(){
 }
 
 // Repuebla el desplegable de login con la lista completa una vez han llegado
-// todos los datos (por si prepararLoginRapido no llegó a tiempo). No hace nada
-// si el usuario ya ha iniciado sesión mientras tanto.
+// todos los datos. No hace nada si el usuario ya ha iniciado sesión mientras tanto.
 function prepararLogin(){
   if(sesionIniciada) return;
   const sel = document.getElementById('loginPiloto');
