@@ -97,7 +97,8 @@
     border:1px solid var(--hairline);flex:none;
   }
   .piloto-header-nombre{color:var(--text);white-space:nowrap;}
-  .piloto-header-pill .lic-tag{margin-left:0;padding:2px 6px;font-size:9px;}
+  .piloto-header-pill .badge{margin-left:0;padding:2px 6px;font-size:9px;vertical-align:middle;}
+  .piloto-header-pill .dot{width:5px;height:5px;margin-right:4px;}
   .piloto-header-saldo{color:var(--amber);font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;}
 
   .brk-mobile{display:none;}
@@ -287,18 +288,28 @@
   }
 
   /* Mi Garaje */
-  .mi-garaje-ficha{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-bottom:20px;}
-  .mi-garaje-avatar{
-    width:110px;height:110px;border-radius:50%;background:var(--panel-2) center/cover;
-    border:2px solid var(--hairline);flex:none;
-  }
-  .mi-garaje-info .name{font-family:'Teko',sans-serif;font-size:32px;margin:0 0 10px;line-height:1;}
-  .mi-garaje-info .flag-img{height:22px;margin-left:6px;vertical-align:middle;border-radius:2px;box-shadow:0 0 0 1px var(--hairline);}
-  .mi-garaje-desc{display:flex;flex-direction:column;gap:6px;}
-  .mi-garaje-desc .row{display:flex;gap:10px;align-items:baseline;}
-  .mi-garaje-desc .lbl{color:var(--text-dim);text-transform:uppercase;font-size:11px;letter-spacing:.5px;min-width:90px;}
-  .mi-garaje-desc .val{font-family:'JetBrains Mono',monospace;color:var(--text);font-weight:600;font-size:14px;}
-  .mi-garaje-seccion h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:0 0 14px;font-family:'Inter',sans-serif;font-weight:700;}
+  .carnet-piloto{position:relative;display:flex;align-items:center;border-radius:16px;overflow:hidden;background:#121316;height:180px;margin-bottom:20px;}
+  .carnet-piloto .left{flex:0 0 200px;height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .carnet-piloto .texture{position:absolute;inset:0;background-image:url('https://raw.githubusercontent.com/race-online/academy/refs/heads/main/logos/oro.jpg');background-size:cover;background-position:center;filter:var(--tex-filter, none);}
+  .carnet-piloto .darken{position:absolute;inset:0;background:rgba(0,0,0,0.38);}
+  .carnet-piloto .curve{position:absolute;top:50%;left:180px;width:340px;height:360px;border-radius:50%;background:#121316;transform:translateY(-50%);z-index:1;}
+  .carnet-piloto .halo{position:relative;z-index:2;width:160px;height:160px;border-radius:50%;}
+  .carnet-piloto .halo::before{content:'';position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(circle, var(--light) 0%, transparent 68%);opacity:.4;}
+  .carnet-piloto .halo .inner{position:relative;width:160px;height:160px;border-radius:50%;background:var(--panel-2) center/cover;box-shadow:0 0 0 3px var(--light), 0 3px 14px rgba(0,0,0,.55);}
+  .carnet-piloto .right{flex:1;padding:20px 26px 20px 30px;position:relative;z-index:2;}
+  .carnet-piloto .top-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .carnet-piloto .driver-name{font-family:'Teko',sans-serif;font-weight:500;font-size:34px;color:#fff;margin:0;letter-spacing:.3px;}
+  .carnet-piloto .flag-img{width:26px;height:18px;border-radius:4px;object-fit:cover;box-shadow:0 0 0 1px var(--hairline);}
+  .badge{display:inline-flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:.5px;}
+  .dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px;background:currentColor;}
+  .carnet-piloto .data-grid{display:grid;grid-template-columns:max-content 1fr;gap:9px 22px;}
+  .carnet-piloto .data-grid .k{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:#7E8491;font-weight:700;align-self:center;}
+  .carnet-piloto .data-grid .v{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#fff;align-self:center;}
+  .lic-SIL{background:rgba(198,205,212,0.14);color:#D7DCE2;}
+  .lic-AMA{background:rgba(201,138,74,0.16);color:#E3A468;}
+  .lic-PAM{background:rgba(232,195,60,0.16);color:#F5D34A;}
+  .lic-PRO{background:#050607;color:#F0F0F0;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22);}
+  .lic-default{background:var(--panel-2);color:var(--text-dim);}
   .coche-principal-bar{
     display:flex;align-items:center;gap:12px;flex-wrap:wrap;
     background:var(--panel);border:1px solid var(--hairline);border-radius:var(--radius);padding:16px;
@@ -462,6 +473,7 @@
   @media (min-width:701px){
     .modal.modal-ficha.modal-ficha-wide{max-width:660px;}
     .specs-wrap-2col{display:grid;grid-template-columns:1fr 1fr;column-gap:28px;}
+    .carnet-piloto{width:530px;max-width:100%;}
   }
   .ficha-grande{
     position:relative;height:210px;border-radius:10px;overflow:hidden;
@@ -620,7 +632,7 @@
       <div class="piloto-header-pill" id="pilotoHeaderPill" style="display:none;">
         <div class="piloto-header-avatar" id="pilotoHeaderAvatar"></div>
         <span class="piloto-header-nombre" id="pilotoHeaderNombre"></span>
-        <span class="lic-tag" id="pilotoHeaderLic"></span>
+        <span class="badge" id="pilotoHeaderLic"></span>
         <span class="piloto-header-saldo" id="pilotoHeaderSaldo"></span>
       </div>
     </nav>
@@ -844,7 +856,7 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbx23LJXHV6G-sYtbe6ky9qAbPHTuo35fq8Rd9EcoXyk3-cPWEXyTMOP9Uc6e50y1FsLjA/exec';
-const STATIC_DATA_URL = 'https://cdn.jsdelivr.net/gh/OWNER/REPO@BRANCH/data/race-data.json';
+const STATIC_DATA_URL = 'https://cdn.jsdelivr.net/gh/race-online/academy@main/data/race-data.json';
 
 let DB = { pilotos: [], coches: [], calendario: [], clasificacion: [], clasteam: [], historial: [], r1: [], r2: [], r3: [], r4: [], logosForzarBlancoPorUrl: {}, logosForzarBlancoCarreras: {} };
 let cocheFilter = 'todos';
@@ -955,45 +967,8 @@ async function cargarTodo(){
     if(sesion.tipo === 'piloto') renderMiGaraje();
     actualizarPilotoHeaderPill();
     if(!sesionIniciada) prepararLogin();
-    revalidarEnSegundoPlano(); // sin await: corre en paralelo, no retrasa la carga rápida
   }catch(err){
     toast('No se pudieron cargar los datos: ' + err.message, 'err');
-  }
-}
-
-// Comprueba en segundo plano si el JSON estático de jsDelivr está desactualizado,
-// comparando su "version" contra la versión real que tiene el backend ahora mismo
-// (consulta ligerísima, no lee el Sheet). Si hay diferencia, se piden los datos
-// en vivo y se repinta la web con lo actualizado — sin bloquear la carga inicial.
-async function revalidarEnSegundoPlano(){
-  try{
-    const resV = await fetch(API_URL + '?action=version');
-    const jsonV = await resV.json();
-    if(!jsonV || !jsonV.ok) return;
-
-    const versionReal = String(jsonV.version || '');
-    const versionActual = String(DB.version || '');
-    if(!versionReal || versionReal === versionActual) return; // ya está al día
-
-    const resLive = await fetch(API_URL);
-    const jsonLive = await resLive.json();
-    if(!jsonLive.ok) return;
-
-    DB = jsonLive.data;
-    mercadoBloqueado = !!DB.mercadoBloqueado;
-    actualizarEstadoMercado();
-    poblarCategorias();
-    renderCoches();
-    renderPilotos();
-    renderCalendario();
-    renderClasificacion();
-    renderClasTeam();
-    renderHistorial();
-    if(sesion.tipo === 'piloto') renderMiGaraje();
-    actualizarPilotoHeaderPill();
-  }catch(err){
-    // Si falla la revalidación, mejor dejar en pantalla lo que ya había
-    // (aunque esté algo desactualizado) que romper la web.
   }
 }
 
@@ -1004,7 +979,8 @@ function mostrarLoginConCarga(){
 }
 
 // Repuebla el desplegable de login con la lista completa una vez han llegado
-// todos los datos. No hace nada si el usuario ya ha iniciado sesión mientras tanto.
+// todos los datos (por si prepararLoginRapido no llegó a tiempo). No hace nada
+// si el usuario ya ha iniciado sesión mientras tanto.
 function prepararLogin(){
   if(sesionIniciada) return;
   const sel = document.getElementById('loginPiloto');
@@ -1065,7 +1041,9 @@ function actualizarPilotoHeaderPill(){
   document.getElementById('pilotoHeaderNombre').textContent = abreviarNombre(p.Nombre_Piloto || '');
 
   const licEl = document.getElementById('pilotoHeaderLic');
-  licEl.textContent = licencia || '';
+  const licInfoHeader = licenciaInfo_(licencia);
+  licEl.innerHTML = licencia ? '<span class="dot"></span>' + licencia : '';
+  licEl.className = 'badge' + (licencia ? ' ' + licInfoHeader.badgeClass : '');
   licEl.style.display = licencia ? '' : 'none';
 
   document.getElementById('pilotoHeaderSaldo').textContent = saldo.toLocaleString() + ' OC';
@@ -1668,7 +1646,7 @@ function renderPilotos(){
             <p class="owner">Coche principal · Valor de venta: ${precioVenta.toLocaleString()} OC</p>
           </div>
         </div>`;
-    })() : `<img class="no-car-img" src="https://raw.githubusercontent.com/race-online/academy/refs/heads/main/coches/sincoche.jpg" alt="Sin coche">`;
+    })() : `<img class="no-car-img" src="https://i.ibb.co/4wHwbNFq/sincoche.jpg" alt="Sin coche">`;
 
     return `
       <div class="pilot-card-v2" onclick="abrirModalPiloto('${p.ID_Piloto}')">
@@ -1745,6 +1723,18 @@ function abrirModalPiloto(idPiloto){
 
   document.getElementById('modalPiloto').classList.add('show');
 }
+
+function licenciaInfo_(licencia){
+  const key = String(licencia || '').trim().toUpperCase();
+  const mapa = {
+    SIL: { light: '#5f666e', filtro: 'grayscale(1) brightness(1.05) contrast(0.95)', badgeClass: 'lic-SIL' },
+    AMA: { light: '#8a5a2e', filtro: 'sepia(1) saturate(2.2) hue-rotate(-25deg) brightness(0.6)', badgeClass: 'lic-AMA' },
+    PAM: { light: '#a4842a', filtro: 'none', badgeClass: 'lic-PAM' },
+    PRO: { light: '#1a1c1f', filtro: 'grayscale(1) brightness(0.38) contrast(1.1)', badgeClass: 'lic-PRO' }
+  };
+  return mapa[key] || { light: '#4a4f57', filtro: 'grayscale(1) brightness(0.5)', badgeClass: 'lic-default' };
+}
+
 
 function renderMiGaraje(){
   const cont = document.getElementById('miGarajeContenido');
@@ -1848,15 +1838,25 @@ function renderMiGaraje(){
       </table>
     </div>` : '<div class="empty-state">Todavía no hay carreras registradas para este piloto.</div>';
 
+    const licInfo = licenciaInfo_(licencia);
   cont.innerHTML = `
-    <div class="mi-garaje-ficha">
-      <div class="mi-garaje-avatar" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div>
-      <div class="mi-garaje-info">
-        <p class="name">${p.Nombre_Piloto || ''} ${bandera} ${licencia ? `<span class="lic-tag">${licencia}</span>` : ''}</p>
-        <div class="mi-garaje-desc">
-          <div class="row"><span class="lbl">ID Piloto</span><span class="val">${p.ID_Piloto || ''}</span></div>
-          <div class="row"><span class="lbl">Saldo</span><span class="val">${saldo.toLocaleString()} OC</span></div>
-          <div class="row"><span class="lbl">Equipo</span><span class="val">${equipo || '—'}</span></div>
+    <div class="carnet-piloto" style="--light:${licInfo.light};">
+      <div class="left" style="--tex-filter:${licInfo.filtro};">
+        <div class="texture"></div>
+        <div class="darken"></div>
+        <div class="curve"></div>
+        <div class="halo"><div class="inner" style="background-image:url('${p.Foto_Avatar_URL || ''}')"></div></div>
+      </div>
+      <div class="right">
+        <div class="top-row">
+          <p class="driver-name">${p.Nombre_Piloto || ''}</p>
+          ${bandera}
+          ${licencia ? `<span class="badge ${licInfo.badgeClass}"><span class="dot"></span>${licencia}</span>` : ''}
+        </div>
+        <div class="data-grid">
+          <span class="k">ID Piloto:</span><span class="v">${p.ID_Piloto || ''}</span>
+          <span class="k">Saldo:</span><span class="v">${saldo.toLocaleString()} OC</span>
+          <span class="k">Equipo:</span><span class="v">${equipo || '—'}</span>
         </div>
       </div>
     </div>
